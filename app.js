@@ -51,6 +51,40 @@ function titleCase(input = '') {
     .join(' ');
 }
 
+function firstSentence(input = '') {
+  const text = normalizeWhitespaceForUi(input);
+  if (!text) return '';
+  const match = text.match(/^.*?[.!?](?:\s|$)/);
+  return (match ? match[0] : text).trim();
+}
+
+function normalizeWhitespaceForUi(input = '') {
+  return String(input).replace(/\s+/g, ' ').trim();
+}
+
+function cadenceCategory(cadence = '') {
+  const text = cadence.toLowerCase();
+  if (!text) return 'As needed';
+  if (text.includes('daily') || text.includes('business days')) return 'Daily';
+  if (text.includes('monday and friday') || text.includes('twice weekly')) return 'Twice weekly';
+  if (text.includes('weekly')) return 'Weekly';
+  if (text.includes('monthly') || text.includes('third wednesday')) return 'Monthly';
+  if (text.includes('reference')) return 'Reference';
+  return 'Check cycle';
+}
+
+function sourceBestFor(source = {}) {
+  return firstSentence(source.notes || '') || source.record_type || 'Official source';
+}
+
+function sourceDetailNote(source = {}) {
+  const notes = normalizeWhitespaceForUi(source.notes || '');
+  const first = firstSentence(notes);
+  if (!notes) return source.record_type || '';
+  if (notes === first) return `Record type: ${source.record_type || 'Official source'}`;
+  return notes.slice(first.length).trim() || `Record type: ${source.record_type || 'Official source'}`;
+}
+
 function isAllLicenseSource(source = {}) {
   const text = [source.source_name, source.record_type, source.notes].filter(Boolean).join(' ');
   return /all active city licenses|license holder|holders|holder list|lookup|statewide lookup/i.test(text);
@@ -307,9 +341,10 @@ function renderSourceSchedule(sources) {
                 <span class="score-badge">${escapeHtml(titleCase(source.priority || 'reference'))}</span>
               </div>
               <h3 class="source-title">${escapeHtml(source.source_name)}</h3>
-              <p class="source-subtitle">${escapeHtml(source.record_type || 'Official source')}</p>
+              <p class="source-subtitle">${escapeHtml(sourceBestFor(source))}</p>
             </div>
             <div class="source-summary-side">
+              <span class="score-badge source-check-badge">${escapeHtml(cadenceCategory(source.cadence || ''))}</span>
               <span class="meta-kicker">Check Back</span>
               <p class="source-cadence-preview">${escapeHtml(source.cadence || 'As needed')}</p>
               <span class="source-caret" aria-hidden="true"></span>
@@ -323,12 +358,16 @@ function renderSourceSchedule(sources) {
                 <p>${escapeHtml(source.cadence || 'As needed')}</p>
               </div>
               <div>
+                <span class="meta-kicker">Best For</span>
+                <p>${escapeHtml(sourceBestFor(source))}</p>
+              </div>
+              <div>
                 <span class="meta-kicker">Fields Exposed</span>
                 <p>${escapeHtml((source.fields_expected || []).join(', ') || 'Not listed')}</p>
               </div>
             </div>
 
-            <p class="source-notes">${escapeHtml(source.notes || '')}</p>
+            <p class="source-notes">${escapeHtml(sourceDetailNote(source))}</p>
             <div class="link-row">${linkHtml(source.url, 'Open source')}</div>
           </div>
         </details>

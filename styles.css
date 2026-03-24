@@ -307,6 +307,7 @@ h1 {
   display: grid;
   gap: 0.85rem;
   margin-top: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
 .source-notes {
@@ -337,6 +338,10 @@ h1 {
   gap: 0.28rem;
   color: var(--muted-strong);
   text-align: right;
+}
+
+.source-check-badge {
+  justify-self: end;
 }
 
 .source-cadence-preview {
@@ -749,6 +754,10 @@ select:focus {
   .source-summary-side {
     justify-items: start;
     text-align: left;
+  }
+
+  .source-check-badge {
+    justify-self: start;
   }
 
   h1 {
