@@ -10,6 +10,7 @@ const sourceToggleEl = document.getElementById('sourceToggle');
 const sourcePanelBodyEl = document.getElementById('sourcePanelBody');
 const summaryGridEl = document.getElementById('summaryGrid');
 const callListEl = document.getElementById('callList');
+const justMissedListEl = document.getElementById('justMissedList');
 const leadGridEl = document.getElementById('leadGrid');
 const leadCardTemplate = document.getElementById('leadCardTemplate');
 
@@ -22,6 +23,14 @@ function preferredContactName(lead) {
 
 function hasAnyDirectContact(lead) {
   return Boolean(lead.contact_email || lead.contact_phone || lead.enriched_contact_email || lead.enriched_contact_phone);
+}
+
+function hasOfficialDirectContact(lead) {
+  return Boolean(lead.contact_email || lead.contact_phone);
+}
+
+function hasEnrichedDirectContact(lead) {
+  return Boolean(lead.enriched_contact_email || lead.enriched_contact_phone);
 }
 
 function hasDistributorSignal(lead) {
@@ -132,6 +141,42 @@ function formatDate(input = '') {
   });
 }
 
+function leadText(lead) {
+  return normalizeWhitespaceForUi([lead.official_title, lead.license_type, lead.official_summary].filter(Boolean).join(' '));
+}
+
+function isUpcomingLead(lead) {
+  const date = new Date(lead.hearing_date || lead.first_public_record_date || '');
+  if (Number.isNaN(date.getTime())) return false;
+  return date.getTime() >= Date.now() - 24 * 60 * 60 * 1000;
+}
+
+function isTemporaryPermitLead(lead) {
+  return /\bspecial one-day liquor license\b|\bone-day liquor\b|\btemporary permit\b|\bspecial event\b/i.test(leadText(lead));
+}
+
+function isConsumptionOnlyLead(lead) {
+  return /\bconsume, but not sell, alcoholic beverages\b|\balcohol consumption request\b/i.test(leadText(lead));
+}
+
+function recordDate(lead) {
+  return lead.first_public_record_date || lead.hearing_date || '';
+}
+
+function isWithinLastDays(lead, days) {
+  const date = new Date(recordDate(lead));
+  if (Number.isNaN(date.getTime())) return false;
+  return Date.now() - date.getTime() <= days * 24 * 60 * 60 * 1000;
+}
+
+function isJustMissedLead(lead) {
+  if (isUpcomingLead(lead)) return false;
+  if (!isWithinLastDays(lead, 180)) return false;
+  return !['Temporary / event permit', 'Temporary / consumption-only', 'Weak signal / generic code'].includes(
+    lead.sales_fit
+  );
+}
+
 function renderWarnings(meta) {
   warningsEl.innerHTML = '';
   if (!meta?.warnings?.length) return;
@@ -185,17 +230,31 @@ function renderSummary(leads) {
 }
 
 function callPriority(lead) {
-  const score = Number(lead.sales_likelihood_score ?? 0);
-  const statusBoost = ['pending_hearing', 'license_hearing'].includes(lead.status)
-    ? 35
-    : lead.status === 'heard'
-      ? 20
-      : 10;
-  const contactBoost = hasAnyDirectContact(lead) ? 12 : 0;
-  const namedBoost = preferredContactName(lead) ? 8 : 0;
-  const distributorPenalty = lead.distributor_signal_type === 'exact' ? -2 : 0;
+  let priority = Number(lead.sales_likelihood_score ?? 0);
 
-  return score + statusBoost + contactBoost + namedBoost + distributorPenalty;
+  if (isUpcomingLead(lead)) priority += 28;
+  else if (lead.status === 'pending_hearing') priority += 24;
+  else if (lead.status === 'license_hearing' || lead.status === 'public_recorded') priority += 16;
+  else if (lead.status === 'heard') priority += 6;
+
+  if (preferredContactName(lead)) {
+    priority += lead.contact_name ? 14 : 8;
+  }
+
+  if (hasOfficialDirectContact(lead)) priority += 22;
+  else if (hasEnrichedDirectContact(lead)) priority += 10;
+
+  if (lead.distributor_signal_type === 'exact') priority += 4;
+  else if (lead.distributor_signal_type === 'brand_inferred') priority += 2;
+
+  if (lead.sales_fit === 'Ownership / operator change') priority += 10;
+  if (lead.sales_fit === 'New issuance' || lead.sales_fit === 'New / timely') priority += 10;
+  if (lead.sales_fit === 'Existing venue / amendment') priority -= 18;
+  if (lead.sales_fit === 'Weak signal / generic code') priority -= 28;
+  if (lead.sales_fit === 'Temporary / event permit' || isTemporaryPermitLead(lead)) priority -= 40;
+  if (lead.sales_fit === 'Temporary / consumption-only' || isConsumptionOnlyLead(lead)) priority -= 48;
+
+  return priority;
 }
 
 function renderCallList(leads) {
@@ -242,6 +301,62 @@ function renderCallList(leads) {
                 <div>
                   <span class="meta-kicker">Why now</span>
                   <p>${escapeHtml(lead.sales_fit || lead.sales_likelihood_label || 'Active lead')}</p>
+                </div>
+              </div>
+              <p class="call-card-summary">${escapeHtml(lead.sales_likelihood_summary || lead.inclusion_summary || '')}</p>
+            </article>
+          `
+        )
+        .join('')}
+    </div>
+  `;
+}
+
+function renderJustMissedList(leads) {
+  const ranked = [...leads]
+    .filter((lead) => isJustMissedLead(lead))
+    .sort((a, b) => {
+      const priorityDelta = callPriority(b) - callPriority(a);
+      if (priorityDelta !== 0) return priorityDelta;
+      return recordDate(b).localeCompare(recordDate(a));
+    })
+    .slice(0, 4);
+
+  if (!ranked.length) {
+    justMissedListEl.innerHTML = '';
+    return;
+  }
+
+  justMissedListEl.innerHTML = `
+    <div class="call-list-head">
+      <div>
+        <p class="eyebrow">Just Missed</p>
+        <h2 class="section-title">Who opened in the last 6 months?</h2>
+      </div>
+      <p class="section-copy">
+        Still-viable accounts from the last 180 days that are no longer brand-new but may still be changing distributors, menus, or operators.
+      </p>
+    </div>
+    <div class="call-list-grid">
+      ${ranked
+        .map(
+          (lead) => `
+            <article class="call-card">
+              <div class="badge-row">
+                <span class="city-badge">${escapeHtml(lead.source_city)}</span>
+                <span class="status-badge">${escapeHtml(labelStatus(lead.status))}</span>
+                <span class="score-badge">${escapeHtml(labelScore(lead))}</span>
+              </div>
+              <h3 class="call-card-title">${escapeHtml(lead.business_name || 'Unnamed business')}</h3>
+              <p class="call-card-subtitle">${escapeHtml(lead.address || 'No address found yet')}</p>
+              <div class="call-card-meta">
+                <div>
+                  <span class="meta-kicker">Public record</span>
+                  <p>${escapeHtml(formatDate(recordDate(lead)))}</p>
+                </div>
+                <div>
+                  <span class="meta-kicker">Call</span>
+                  <p>${escapeHtml(bestContactLine(lead))}</p>
                 </div>
               </div>
               <p class="call-card-summary">${escapeHtml(lead.sales_likelihood_summary || lead.inclusion_summary || '')}</p>
@@ -386,6 +501,7 @@ function renderLeads() {
   const leads = allLeads.filter(matchesFilters);
   renderSummary(leads);
   renderCallList(leads);
+  renderJustMissedList(leads);
   leadCountEl.textContent = String(leads.length);
 
   const fragment = document.createDocumentFragment();

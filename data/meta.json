@@ -1,11 +1,27 @@
 {
-  "generated_at": "2026-03-24T18:20:39.052Z",
+  "generated_at": "2026-03-24T21:59:52.629Z",
   "lead_count": 3,
   "cities": [
     "Minneapolis",
     "St. Paul"
   ],
+  "apify": {
+    "candidate_sources": [
+      "shell-env",
+      "project-dotenv",
+      "workspace-mcp"
+    ],
+    "selected_source": "project-dotenv",
+    "selected": true,
+    "last_error": "",
+    "auth_failed_sources": [
+      "shell-env"
+    ]
+  },
   "warnings": [
-    "Minnesota AGE Public Data Access is the preferred statewide approved-license source, but the portal is currently blocking headless automation. This build is using Minneapolis and St. Paul public hearing records as the automated source of truth."
+    "Minnesota AGE Public Data Access is the preferred statewide approved-license source, but the portal is currently blocking headless automation. This build is currently automating Minneapolis, St. Paul, Fargo, and Sioux Falls public records instead.",
+    "Rapid City agenda pages are still behind a Cloudflare challenge, so Rapid City remains a manual watchlist source for now.",
+    "Apify enrichment is active via project-dotenv.",
+    "Filtered 28 temporary or consumption-only permits from the main board because they are not durable distributor opportunities."
   ]
 }
