@@ -179,10 +179,7 @@ function isJustMissedLead(lead) {
 
 function renderWarnings(meta) {
   warningsEl.innerHTML = '';
-  if (!meta?.warnings?.length) return;
-  warningsEl.innerHTML = meta.warnings
-    .map((warning) => `<div class="warning-chip">${escapeHtml(warning)}</div>`)
-    .join('');
+  warningsEl.hidden = true;
 }
 
 function renderSummary(leads) {
@@ -275,7 +272,7 @@ function renderCallList(leads) {
     <div class="call-list-head">
       <div>
         <p class="eyebrow">Call First</p>
-        <h2 class="section-title">Who should I be calling today?</h2>
+        <h2 class="section-title">Opportunities</h2>
       </div>
       <p class="section-copy">
         Ranked from the current board based on timing, likelihood, and whether there is a real person or direct line to contact.
@@ -331,7 +328,7 @@ function renderJustMissedList(leads) {
     <div class="call-list-head">
       <div>
         <p class="eyebrow">Opportunities</p>
-        <h2 class="section-title">Which accounts from the last 6 months are still worth working?</h2>
+        <h2 class="section-title">Possible Connections</h2>
       </div>
       <p class="section-copy">
         Still-viable accounts from the last 180 days that are no longer brand-new but may still be changing distributors, menus, or operators.
@@ -615,5 +612,6 @@ sourceToggleEl.addEventListener('click', () => {
 updateSourceToggle();
 
 loadDashboard().catch((error) => {
+  warningsEl.hidden = false;
   warningsEl.innerHTML = `<div class="warning-chip">Dashboard load failed: ${escapeHtml(error.message)}</div>`;
 });
