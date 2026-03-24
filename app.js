@@ -330,8 +330,8 @@ function renderJustMissedList(leads) {
   justMissedListEl.innerHTML = `
     <div class="call-list-head">
       <div>
-        <p class="eyebrow">Just Missed</p>
-        <h2 class="section-title">Who opened in the last 6 months?</h2>
+        <p class="eyebrow">Opportunities</p>
+        <h2 class="section-title">Which accounts from the last 6 months are still worth working?</h2>
       </div>
       <p class="section-copy">
         Still-viable accounts from the last 180 days that are no longer brand-new but may still be changing distributors, menus, or operators.
