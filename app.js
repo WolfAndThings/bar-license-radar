@@ -220,19 +220,19 @@ function renderWarnings(meta) {
 function renderSummary(leads) {
   const cards = [
     {
-      label: 'Current / upcoming',
+      label: 'Live now',
       value: leads.filter((lead) => ['pending_hearing', 'license_hearing'].includes(lead.status)).length
     },
     {
-      label: 'Named contact',
+      label: 'Named contacts',
       value: leads.filter((lead) => preferredContactName(lead)).length
     },
     {
-      label: 'Direct contact',
+      label: 'Direct phone/email',
       value: leads.filter((lead) => hasAnyDirectContact(lead)).length
     },
     {
-      label: 'Needs website/contact',
+      label: 'Needs contact info',
       value: leads.filter((lead) => !lead.website_url && !hasAnyDirectContact(lead)).length
     },
     {
@@ -244,7 +244,7 @@ function renderSummary(leads) {
       value: leads.filter((lead) => ['moderate_change', 'major_change'].includes(lead.menu_change_signal)).length
     },
     {
-      label: 'High-likelihood',
+      label: 'High fit',
       value: leads.filter((lead) => (lead.sales_likelihood_score ?? 0) >= 70).length
     }
   ];
@@ -310,7 +310,7 @@ function renderCallList(leads) {
         <h2 class="section-title">Opportunities</h2>
       </div>
       <p class="section-copy">
-        Ranked from the current board based on timing, likelihood, and whether there is a real person or direct line to contact.
+        Ranked by timing, sales fit, and whether there is a real person or direct line to contact.
       </p>
     </div>
     <div class="call-list-grid">
@@ -365,11 +365,11 @@ function renderJustMissedList(leads) {
   justMissedListEl.innerHTML = `
     <div class="call-list-head">
       <div>
-        <p class="eyebrow">Opportunities</p>
+        <p class="eyebrow">Last 6 Months</p>
         <h2 class="section-title">Possible Connections</h2>
       </div>
       <p class="section-copy">
-        Still-viable accounts from the last 180 days that are no longer brand-new but may still be changing distributors, menus, or operators.
+        Accounts from the last 180 days that are no longer brand-new but may still be changing distributors, menus, or operators.
       </p>
     </div>
     <div class="call-list-grid">
