@@ -1,0 +1,11 @@
+{
+  "generated_at": "2026-03-24T17:12:06.896Z",
+  "lead_count": 3,
+  "cities": [
+    "Minneapolis",
+    "St. Paul"
+  ],
+  "warnings": [
+    "Minnesota AGE Public Data Access is the preferred statewide approved-license source, but the portal is currently blocking headless automation. This build is using Minneapolis and St. Paul public hearing records as the automated source of truth."
+  ]
+}

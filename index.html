@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bar License Radar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Minneapolis + St. Paul</p>
+          <h1>Bar License Radar</h1>
+          <p class="hero-text">
+            Daily lead board for new liquor-license activity, public contact signals, and a suggested
+            follow-up message for each bar.
+          </p>
+        </div>
+        <div class="hero-panel">
+          <div class="meta-row">
+            <span class="meta-label">Last refresh</span>
+            <strong id="generatedAt">Loading...</strong>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Lead count</span>
+            <strong id="leadCount">0</strong>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Current mode</span>
+            <strong>Suggested follow-up only</strong>
+          </div>
+        </div>
+      </header>
+
+      <section class="controls">
+        <label>
+          <span>Search</span>
+          <input id="searchInput" type="search" placeholder="Bar, contact, address, applicant..." />
+        </label>
+        <label>
+          <span>City</span>
+          <select id="cityFilter">
+            <option value="all">All cities</option>
+          </select>
+        </label>
+        <label>
+          <span>Status</span>
+          <select id="statusFilter">
+            <option value="all">All statuses</option>
+            <option value="pending_hearing">Pending hearing</option>
+            <option value="license_hearing">License hearing</option>
+            <option value="public_recorded">Public recorded</option>
+            <option value="heard">Heard</option>
+            <option value="license_update">License update</option>
+          </select>
+        </label>
+      </section>
+
+      <section id="warnings" class="warnings"></section>
+      <section id="summaryGrid" class="summary-grid"></section>
+      <section id="leadGrid" class="lead-grid"></section>
+    </div>
+
+    <template id="leadCardTemplate">
+      <article class="lead-card">
+        <div class="lead-head">
+          <div>
+            <div class="badge-row">
+              <span class="city-badge"></span>
+              <span class="status-badge"></span>
+            </div>
+            <h2 class="lead-title"></h2>
+            <p class="lead-subtitle"></p>
+          </div>
+        </div>
+
+        <div class="lead-grid-meta">
+          <div>
+            <span class="meta-kicker">Applicant</span>
+            <p class="applicant"></p>
+          </div>
+          <div>
+            <span class="meta-kicker">License</span>
+            <p class="license"></p>
+          </div>
+          <div>
+            <span class="meta-kicker">Dates</span>
+            <p class="dates"></p>
+          </div>
+          <div>
+            <span class="meta-kicker">Contact</span>
+            <p class="contact"></p>
+          </div>
+        </div>
+
+        <div class="signals-wrap">
+          <span class="meta-kicker">Public signals</span>
+          <p class="signals"></p>
+        </div>
+
+        <div class="followup-wrap">
+          <div class="followup-head">
+            <span class="meta-kicker">Suggested follow-up</span>
+            <button class="copy-btn" type="button">Copy</button>
+          </div>
+          <p class="followup-subject"></p>
+          <pre class="followup-body"></pre>
+        </div>
+
+        <div class="link-row"></div>
+      </article>
+    </template>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
