@@ -6,7 +6,10 @@ const statusFilterEl = document.getElementById('statusFilter');
 const warningsEl = document.getElementById('warnings');
 const allLicensesLinksEl = document.getElementById('allLicensesLinks');
 const sourceScheduleGridEl = document.getElementById('sourceScheduleGrid');
+const sourceToggleEl = document.getElementById('sourceToggle');
+const sourcePanelBodyEl = document.getElementById('sourcePanelBody');
 const summaryGridEl = document.getElementById('summaryGrid');
+const callListEl = document.getElementById('callList');
 const leadGridEl = document.getElementById('leadGrid');
 const leadCardTemplate = document.getElementById('leadCardTemplate');
 
@@ -61,6 +64,18 @@ function labelScore(lead) {
   const score = Number(lead.sales_likelihood_score ?? 0);
   const label = lead.sales_likelihood_label || 'Unknown';
   return `${label} ${score}/100`;
+}
+
+function bestContactLine(lead) {
+  return formatContactLine(
+    [
+      preferredContactName(lead),
+      lead.contact_role || lead.enriched_contact_role,
+      lead.contact_phone || lead.enriched_contact_phone,
+      lead.contact_email || lead.enriched_contact_email
+    ],
+    'No direct contact yet'
+  );
 }
 
 function escapeHtml(input = '') {
@@ -133,6 +148,75 @@ function renderSummary(leads) {
       `
     )
     .join('');
+}
+
+function callPriority(lead) {
+  const score = Number(lead.sales_likelihood_score ?? 0);
+  const statusBoost = ['pending_hearing', 'license_hearing'].includes(lead.status)
+    ? 35
+    : lead.status === 'heard'
+      ? 20
+      : 10;
+  const contactBoost = hasAnyDirectContact(lead) ? 12 : 0;
+  const namedBoost = preferredContactName(lead) ? 8 : 0;
+  const distributorPenalty = lead.distributor_signal_type === 'exact' ? -2 : 0;
+
+  return score + statusBoost + contactBoost + namedBoost + distributorPenalty;
+}
+
+function renderCallList(leads) {
+  const ranked = [...leads]
+    .sort((a, b) => {
+      const priorityDelta = callPriority(b) - callPriority(a);
+      if (priorityDelta !== 0) return priorityDelta;
+      return (b.hearing_date || '').localeCompare(a.hearing_date || '');
+    })
+    .slice(0, 4);
+
+  if (!ranked.length) {
+    callListEl.innerHTML = '';
+    return;
+  }
+
+  callListEl.innerHTML = `
+    <div class="call-list-head">
+      <div>
+        <p class="eyebrow">Call First</p>
+        <h2 class="section-title">Who should I be calling today?</h2>
+      </div>
+      <p class="section-copy">
+        Ranked from the current board based on timing, likelihood, and whether there is a real person or direct line to contact.
+      </p>
+    </div>
+    <div class="call-list-grid">
+      ${ranked
+        .map(
+          (lead) => `
+            <article class="call-card">
+              <div class="badge-row">
+                <span class="city-badge">${escapeHtml(lead.source_city)}</span>
+                <span class="status-badge">${escapeHtml(labelStatus(lead.status))}</span>
+                <span class="score-badge">${escapeHtml(labelScore(lead))}</span>
+              </div>
+              <h3 class="call-card-title">${escapeHtml(lead.business_name || 'Unnamed business')}</h3>
+              <p class="call-card-subtitle">${escapeHtml(lead.address || 'No address found yet')}</p>
+              <div class="call-card-meta">
+                <div>
+                  <span class="meta-kicker">Call</span>
+                  <p>${escapeHtml(bestContactLine(lead))}</p>
+                </div>
+                <div>
+                  <span class="meta-kicker">Why now</span>
+                  <p>${escapeHtml(lead.sales_fit || lead.sales_likelihood_label || 'Active lead')}</p>
+                </div>
+              </div>
+              <p class="call-card-summary">${escapeHtml(lead.sales_likelihood_summary || lead.inclusion_summary || '')}</p>
+            </article>
+          `
+        )
+        .join('')}
+    </div>
+  `;
 }
 
 function matchesFilters(lead) {
@@ -214,37 +298,55 @@ function renderSourceSchedule(sources) {
   sourceScheduleGridEl.innerHTML = coreSources
     .map(
       (source) => `
-        <article class="source-card">
-          <div class="badge-row">
-            <span class="city-badge">${escapeHtml(source.state)}</span>
-            <span class="status-badge">${escapeHtml(source.city)}</span>
-            <span class="score-badge">${escapeHtml(titleCase(source.priority || 'reference'))}</span>
-          </div>
-          <h3 class="source-title">${escapeHtml(source.source_name)}</h3>
-          <p class="source-subtitle">${escapeHtml(source.record_type || 'Official source')}</p>
-
-          <div class="source-meta">
-            <div>
+        <details class="source-card">
+          <summary class="source-summary">
+            <div class="source-summary-main">
+              <div class="badge-row">
+                <span class="city-badge">${escapeHtml(source.state)}</span>
+                <span class="status-badge">${escapeHtml(source.city)}</span>
+                <span class="score-badge">${escapeHtml(titleCase(source.priority || 'reference'))}</span>
+              </div>
+              <h3 class="source-title">${escapeHtml(source.source_name)}</h3>
+              <p class="source-subtitle">${escapeHtml(source.record_type || 'Official source')}</p>
+            </div>
+            <div class="source-summary-side">
               <span class="meta-kicker">Check Back</span>
-              <p>${escapeHtml(source.cadence || 'As needed')}</p>
+              <p class="source-cadence-preview">${escapeHtml(source.cadence || 'As needed')}</p>
+              <span class="source-caret" aria-hidden="true"></span>
             </div>
-            <div>
-              <span class="meta-kicker">Fields Exposed</span>
-              <p>${escapeHtml((source.fields_expected || []).join(', ') || 'Not listed')}</p>
-            </div>
-          </div>
+          </summary>
 
-          <p class="source-notes">${escapeHtml(source.notes || '')}</p>
-          <div class="link-row">${linkHtml(source.url, 'Open source')}</div>
-        </article>
+          <div class="source-card-body">
+            <div class="source-meta">
+              <div>
+                <span class="meta-kicker">Check Back</span>
+                <p>${escapeHtml(source.cadence || 'As needed')}</p>
+              </div>
+              <div>
+                <span class="meta-kicker">Fields Exposed</span>
+                <p>${escapeHtml((source.fields_expected || []).join(', ') || 'Not listed')}</p>
+              </div>
+            </div>
+
+            <p class="source-notes">${escapeHtml(source.notes || '')}</p>
+            <div class="link-row">${linkHtml(source.url, 'Open source')}</div>
+          </div>
+        </details>
       `
     )
     .join('');
 }
 
+function updateSourceToggle() {
+  const isExpanded = !sourcePanelBodyEl.hidden;
+  sourceToggleEl.textContent = isExpanded ? 'Hide sources' : 'Show sources';
+  sourceToggleEl.setAttribute('aria-expanded', String(isExpanded));
+}
+
 function renderLeads() {
   const leads = allLeads.filter(matchesFilters);
   renderSummary(leads);
+  renderCallList(leads);
   leadCountEl.textContent = String(leads.length);
 
   const fragment = document.createDocumentFragment();
@@ -350,6 +452,12 @@ async function loadDashboard() {
 searchInputEl.addEventListener('input', renderLeads);
 cityFilterEl.addEventListener('change', renderLeads);
 statusFilterEl.addEventListener('change', renderLeads);
+sourceToggleEl.addEventListener('click', () => {
+  sourcePanelBodyEl.hidden = !sourcePanelBodyEl.hidden;
+  updateSourceToggle();
+});
+
+updateSourceToggle();
 
 loadDashboard().catch((error) => {
   warningsEl.innerHTML = `<div class="warning-chip">Dashboard load failed: ${escapeHtml(error.message)}</div>`;

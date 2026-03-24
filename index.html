@@ -39,26 +39,6 @@
         </div>
       </header>
 
-      <section class="source-panel">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">Checkback Schedule</p>
-            <h2 class="section-title">Where pulls come from and when to check back</h2>
-          </div>
-          <p class="section-copy">
-            Core official sources, when to re-check them, and quick access to broad holder lookups for existing operators who may
-            be changing programs, ownership, or suppliers.
-          </p>
-        </div>
-
-        <div class="quick-links-wrap">
-          <span class="meta-kicker">All Liquor Licenses</span>
-          <div id="allLicensesLinks" class="quick-link-row"></div>
-        </div>
-
-        <div id="sourceScheduleGrid" class="source-grid"></div>
-      </section>
-
       <section class="controls">
         <label>
           <span>Search</span>
@@ -85,7 +65,34 @@
 
       <section id="warnings" class="warnings"></section>
       <section id="summaryGrid" class="summary-grid"></section>
+      <section id="callList" class="call-list"></section>
       <section id="leadGrid" class="lead-grid"></section>
+
+      <section class="source-panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Reference Sources</p>
+            <h2 class="section-title">Where pulls come from and when to check back</h2>
+          </div>
+          <div class="section-head-side">
+            <p class="section-copy">
+              This is reference material for coverage and checkback timing. The main board above should answer who to call today.
+            </p>
+            <button id="sourceToggle" class="section-toggle" type="button" aria-expanded="false" aria-controls="sourcePanelBody">
+              Show sources
+            </button>
+          </div>
+        </div>
+
+        <div id="sourcePanelBody" class="source-panel-body" hidden>
+          <div class="quick-links-wrap">
+            <span class="meta-kicker">All Liquor Licenses</span>
+            <div id="allLicensesLinks" class="quick-link-row"></div>
+          </div>
+
+          <div id="sourceScheduleGrid" class="source-grid"></div>
+        </div>
+      </section>
     </div>
 
     <template id="leadCardTemplate">
