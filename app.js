@@ -4,14 +4,63 @@ const searchInputEl = document.getElementById('searchInput');
 const cityFilterEl = document.getElementById('cityFilter');
 const statusFilterEl = document.getElementById('statusFilter');
 const warningsEl = document.getElementById('warnings');
+const allLicensesLinksEl = document.getElementById('allLicensesLinks');
+const sourceScheduleGridEl = document.getElementById('sourceScheduleGrid');
 const summaryGridEl = document.getElementById('summaryGrid');
 const leadGridEl = document.getElementById('leadGrid');
 const leadCardTemplate = document.getElementById('leadCardTemplate');
 
 let allLeads = [];
+let allSources = [];
+
+function preferredContactName(lead) {
+  return lead.contact_name || lead.enriched_contact_name || '';
+}
+
+function hasAnyDirectContact(lead) {
+  return Boolean(lead.contact_email || lead.contact_phone || lead.enriched_contact_email || lead.enriched_contact_phone);
+}
+
+function hasDistributorSignal(lead) {
+  return ['exact', 'brand_inferred'].includes(lead.distributor_signal_type);
+}
+
+function hasMenuChangeSignal(lead) {
+  return ['stable', 'moderate_change', 'major_change'].includes(lead.menu_change_signal);
+}
+
+function formatContactLine(parts, fallback) {
+  const text = parts.filter(Boolean).join(' | ');
+  return text || fallback;
+}
+
+function priorityWeight(priority = '') {
+  if (priority === 'high') return 0;
+  if (priority === 'medium') return 1;
+  return 2;
+}
+
+function titleCase(input = '') {
+  return String(input)
+    .split(/[\s_-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(' ');
+}
+
+function isAllLicenseSource(source = {}) {
+  const text = [source.source_name, source.record_type, source.notes].filter(Boolean).join(' ');
+  return /all active city licenses|license holder|holders|holder list|lookup|statewide lookup/i.test(text);
+}
 
 function labelStatus(status = '') {
   return status.replace(/_/g, ' ');
+}
+
+function labelScore(lead) {
+  const score = Number(lead.sales_likelihood_score ?? 0);
+  const label = lead.sales_likelihood_label || 'Unknown';
+  return `${label} ${score}/100`;
 }
 
 function escapeHtml(input = '') {
@@ -45,20 +94,32 @@ function renderWarnings(meta) {
 function renderSummary(leads) {
   const cards = [
     {
-      label: 'Pending / new',
+      label: 'Current / upcoming',
       value: leads.filter((lead) => ['pending_hearing', 'license_hearing'].includes(lead.status)).length
     },
     {
-      label: 'With a person name',
-      value: leads.filter((lead) => lead.contact_name).length
+      label: 'Named contact',
+      value: leads.filter((lead) => preferredContactName(lead)).length
     },
     {
-      label: 'With email or phone',
-      value: leads.filter((lead) => lead.contact_email || lead.contact_phone).length
+      label: 'Direct contact',
+      value: leads.filter((lead) => hasAnyDirectContact(lead)).length
     },
     {
-      label: 'Need enrichment',
-      value: leads.filter((lead) => !lead.website_url && !lead.contact_email && !lead.contact_phone).length
+      label: 'Needs website/contact',
+      value: leads.filter((lead) => !lead.website_url && !hasAnyDirectContact(lead)).length
+    },
+    {
+      label: 'Distributor mapped',
+      value: leads.filter((lead) => hasDistributorSignal(lead)).length
+    },
+    {
+      label: 'Menu changed',
+      value: leads.filter((lead) => ['moderate_change', 'major_change'].includes(lead.menu_change_signal)).length
+    },
+    {
+      label: 'High-likelihood',
+      value: leads.filter((lead) => (lead.sales_likelihood_score ?? 0) >= 70).length
     }
   ];
 
@@ -87,11 +148,26 @@ function matchesFilters(lead) {
     lead.business_name,
     lead.applicant_entity,
     lead.contact_name,
+    lead.contact_role,
     lead.contact_email,
     lead.contact_phone,
+    lead.enriched_contact_name,
+    lead.enriched_contact_role,
+    lead.enriched_contact_email,
+    lead.enriched_contact_phone,
     lead.address,
     lead.license_type,
-    lead.official_summary
+    lead.official_summary,
+    lead.hearing_purpose_summary,
+    lead.inclusion_summary,
+    lead.sales_likelihood_summary,
+    lead.sales_fit,
+    lead.distributor_name,
+    lead.distributor_summary,
+    lead.distributor_next_step,
+    lead.menu_change_summary,
+    lead.wholesaler_risk_summary,
+    ...(Array.isArray(lead.menu_brands) ? lead.menu_brands : [])
   ]
     .join(' ')
     .toLowerCase();
@@ -102,6 +178,68 @@ function matchesFilters(lead) {
 function linkHtml(href, label) {
   if (!href) return '';
   return `<a href="${escapeHtml(href)}" target="_blank" rel="noreferrer">${escapeHtml(label)}</a>`;
+}
+
+function renderAllLicenseLinks(sources) {
+  const licenseSources = [...sources]
+    .filter(isAllLicenseSource)
+    .sort((a, b) => priorityWeight(a.priority) - priorityWeight(b.priority) || a.source_name.localeCompare(b.source_name));
+
+  if (!licenseSources.length) {
+    allLicensesLinksEl.innerHTML = '<p class="empty-inline">No broad license-holder sources loaded yet.</p>';
+    return;
+  }
+
+  allLicensesLinksEl.innerHTML = licenseSources
+    .map(
+      (source) => `
+        <a class="quick-link" href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">
+          ${escapeHtml(source.source_name)}
+        </a>
+      `
+    )
+    .join('');
+}
+
+function renderSourceSchedule(sources) {
+  const coreSources = [...sources]
+    .filter((source) => source.tier === 'core')
+    .sort((a, b) => priorityWeight(a.priority) - priorityWeight(b.priority) || a.source_name.localeCompare(b.source_name));
+
+  if (!coreSources.length) {
+    sourceScheduleGridEl.innerHTML = '<p class="empty-state">No source schedule loaded yet.</p>';
+    return;
+  }
+
+  sourceScheduleGridEl.innerHTML = coreSources
+    .map(
+      (source) => `
+        <article class="source-card">
+          <div class="badge-row">
+            <span class="city-badge">${escapeHtml(source.state)}</span>
+            <span class="status-badge">${escapeHtml(source.city)}</span>
+            <span class="score-badge">${escapeHtml(titleCase(source.priority || 'reference'))}</span>
+          </div>
+          <h3 class="source-title">${escapeHtml(source.source_name)}</h3>
+          <p class="source-subtitle">${escapeHtml(source.record_type || 'Official source')}</p>
+
+          <div class="source-meta">
+            <div>
+              <span class="meta-kicker">Check Back</span>
+              <p>${escapeHtml(source.cadence || 'As needed')}</p>
+            </div>
+            <div>
+              <span class="meta-kicker">Fields Exposed</span>
+              <p>${escapeHtml((source.fields_expected || []).join(', ') || 'Not listed')}</p>
+            </div>
+          </div>
+
+          <p class="source-notes">${escapeHtml(source.notes || '')}</p>
+          <div class="link-row">${linkHtml(source.url, 'Open source')}</div>
+        </article>
+      `
+    )
+    .join('');
 }
 
 function renderLeads() {
@@ -115,6 +253,7 @@ function renderLeads() {
     const node = leadCardTemplate.content.cloneNode(true);
     node.querySelector('.city-badge').textContent = lead.source_city;
     node.querySelector('.status-badge').textContent = labelStatus(lead.status);
+    node.querySelector('.score-badge').textContent = labelScore(lead);
     node.querySelector('.lead-title').textContent = lead.business_name || 'Unnamed business';
     node.querySelector('.lead-subtitle').textContent = lead.address || lead.official_title || 'No address found yet';
     node.querySelector('.applicant').textContent = lead.applicant_entity || 'Unavailable';
@@ -122,15 +261,38 @@ function renderLeads() {
     node.querySelector('.dates').textContent = `Hearing: ${formatDate(lead.hearing_date)}\nFirst public record: ${formatDate(
       lead.first_public_record_date
     )}`;
-    node.querySelector('.contact').textContent =
-      [lead.contact_name, lead.contact_role, lead.contact_email, lead.contact_phone].filter(Boolean).join(' | ') ||
-      'No public contact signal captured yet';
+    node.querySelector('.contact-official').textContent = formatContactLine(
+      [lead.contact_name, lead.contact_role, lead.contact_email, lead.contact_phone],
+      'No official contact signal captured yet'
+    );
+    node.querySelector('.contact-enriched').textContent = formatContactLine(
+      [lead.enriched_contact_name, lead.enriched_contact_role, lead.enriched_contact_email, lead.enriched_contact_phone],
+      'No enriched contact captured yet'
+    );
 
     const signals =
       lead.public_signals?.website_summary ||
       lead.official_summary ||
       'No additional public concept signal captured yet.';
     node.querySelector('.signals').textContent = signals;
+    node.querySelector('.hearing-summary').textContent =
+      lead.hearing_purpose_summary || 'No hearing-purpose summary generated yet.';
+    node.querySelector('.inclusion-summary').textContent =
+      lead.inclusion_summary || 'No inclusion summary generated yet.';
+    node.querySelector('.sales-summary').textContent =
+      `${lead.sales_fit ? `${lead.sales_fit}. ` : ''}${lead.sales_likelihood_summary || 'No sale-likelihood summary generated yet.'}`;
+    node.querySelector('.distributor-summary').textContent =
+      `${lead.distributor_confidence_label || 'Unknown'}${lead.distributor_name ? ` | ${lead.distributor_name}` : ''}. ${
+        lead.distributor_summary || 'No distributor signal generated yet.'
+      }`;
+    node.querySelector('.distributor-next-step').textContent =
+      lead.distributor_next_step || 'No next-step guidance generated yet.';
+    node.querySelector('.menu-summary').textContent =
+      `${lead.menu_change_label || 'Unknown'}. ${lead.menu_change_summary || 'No menu-comparison summary generated yet.'}`;
+    node.querySelector('.wholesaler-risk-summary').textContent =
+      `${lead.wholesaler_risk_label || 'Unknown'}. ${
+        lead.wholesaler_risk_summary || 'No wholesaler-risk summary generated yet.'
+      }`;
 
     node.querySelector('.followup-subject').textContent = lead.suggested_follow_up_subject || '';
     node.querySelector('.followup-body').textContent = lead.suggested_follow_up_body || '';
@@ -157,14 +319,22 @@ function renderLeads() {
 }
 
 async function loadDashboard() {
-  const [metaResponse, leadsResponse] = await Promise.all([fetch('./data/meta.json'), fetch('./data/leads.json')]);
+  const [metaResponse, leadsResponse, sourcesResponse] = await Promise.all([
+    fetch('./data/meta.json'),
+    fetch('./data/leads.json'),
+    fetch('./data/sources.json')
+  ]);
   const meta = await metaResponse.json();
   const leads = await leadsResponse.json();
+  const sources = await sourcesResponse.json();
 
   allLeads = Array.isArray(leads) ? leads : [];
+  allSources = Array.isArray(sources) ? sources : [];
   generatedAtEl.textContent = meta?.generated_at ? new Date(meta.generated_at).toLocaleString() : 'Not refreshed yet';
   leadCountEl.textContent = String(allLeads.length);
   renderWarnings(meta);
+  renderAllLicenseLinks(allSources);
+  renderSourceSchedule(allSources);
 
   const cities = [...new Set(allLeads.map((lead) => lead.source_city).filter(Boolean))];
   for (const city of cities) {

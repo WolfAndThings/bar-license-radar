@@ -19,8 +19,8 @@
           <p class="eyebrow">Minneapolis + St. Paul</p>
           <h1>Bar License Radar</h1>
           <p class="hero-text">
-            Daily lead board for new liquor-license activity, public contact signals, and a suggested
-            follow-up message for each bar.
+            Daily operating board for new liquor-license activity, contact enrichment, distributor clues,
+            and suggested outreach for each account.
           </p>
         </div>
         <div class="hero-panel">
@@ -39,10 +39,30 @@
         </div>
       </header>
 
+      <section class="source-panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Checkback Schedule</p>
+            <h2 class="section-title">Where pulls come from and when to check back</h2>
+          </div>
+          <p class="section-copy">
+            Core official sources, when to re-check them, and quick access to broad holder lookups for existing operators who may
+            be changing programs, ownership, or suppliers.
+          </p>
+        </div>
+
+        <div class="quick-links-wrap">
+          <span class="meta-kicker">All Liquor Licenses</span>
+          <div id="allLicensesLinks" class="quick-link-row"></div>
+        </div>
+
+        <div id="sourceScheduleGrid" class="source-grid"></div>
+      </section>
+
       <section class="controls">
         <label>
           <span>Search</span>
-          <input id="searchInput" type="search" placeholder="Bar, contact, address, applicant..." />
+          <input id="searchInput" type="search" placeholder="Business, address, contact, distributor..." />
         </label>
         <label>
           <span>City</span>
@@ -75,6 +95,7 @@
             <div class="badge-row">
               <span class="city-badge"></span>
               <span class="status-badge"></span>
+              <span class="score-badge"></span>
             </div>
             <h2 class="lead-title"></h2>
             <p class="lead-subtitle"></p>
@@ -95,14 +116,49 @@
             <p class="dates"></p>
           </div>
           <div>
-            <span class="meta-kicker">Contact</span>
-            <p class="contact"></p>
+            <span class="meta-kicker">Official contact</span>
+            <p class="contact-official"></p>
+          </div>
+          <div>
+            <span class="meta-kicker">Enriched contact</span>
+            <p class="contact-enriched"></p>
           </div>
         </div>
 
         <div class="signals-wrap">
           <span class="meta-kicker">Public signals</span>
           <p class="signals"></p>
+        </div>
+
+        <div class="analysis-wrap">
+          <div>
+            <span class="meta-kicker">What The Hearing Is For</span>
+            <p class="hearing-summary"></p>
+          </div>
+          <div>
+            <span class="meta-kicker">Why It Is Here</span>
+            <p class="inclusion-summary"></p>
+          </div>
+          <div>
+            <span class="meta-kicker">Sale Likelihood</span>
+            <p class="sales-summary"></p>
+          </div>
+          <div>
+            <span class="meta-kicker">Distributor Signal</span>
+            <p class="distributor-summary"></p>
+          </div>
+          <div>
+            <span class="meta-kicker">Best Next Distributor Check</span>
+            <p class="distributor-next-step"></p>
+          </div>
+          <div>
+            <span class="meta-kicker">Menu Change Last 6 Months</span>
+            <p class="menu-summary"></p>
+          </div>
+          <div>
+            <span class="meta-kicker">Wholesaler Risk Signal</span>
+            <p class="wholesaler-risk-summary"></p>
+          </div>
         </div>
 
         <div class="followup-wrap">
