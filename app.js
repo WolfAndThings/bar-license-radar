@@ -121,6 +121,41 @@ function bestContactLine(lead) {
   );
 }
 
+function emphasizeHtml(input = '', phrases = []) {
+  let html = escapeHtml(input);
+  const uniquePhrases = [...new Set(phrases.map((value) => String(value || '').trim()).filter(Boolean))]
+    .filter((value) => value.length >= 3)
+    .sort((a, b) => b.length - a.length);
+
+  for (const phrase of uniquePhrases) {
+    const escaped = escapeHtml(phrase);
+    html = html.replaceAll(escaped, `<strong>${escaped}</strong>`);
+  }
+
+  return html;
+}
+
+function summaryCallouts(lead) {
+  return [
+    lead.business_name,
+    lead.contact_name,
+    lead.enriched_contact_name,
+    lead.distributor_name,
+    lead.sales_fit,
+    lead.sales_likelihood_label,
+    lead.menu_change_label,
+    lead.wholesaler_risk_label,
+    'direct public contact',
+    'named contact',
+    'ownership',
+    'operator-change',
+    'brand-based distributor inference',
+    'existing venue amendment',
+    'generic code',
+    'temporary or one-day permit'
+  ];
+}
+
 function escapeHtml(input = '') {
   return String(input)
     .replace(/&/g, '&amp;')
@@ -300,7 +335,10 @@ function renderCallList(leads) {
                   <p>${escapeHtml(lead.sales_fit || lead.sales_likelihood_label || 'Active lead')}</p>
                 </div>
               </div>
-              <p class="call-card-summary">${escapeHtml(lead.sales_likelihood_summary || lead.inclusion_summary || '')}</p>
+              <p class="call-card-summary">${emphasizeHtml(
+                lead.sales_likelihood_summary || lead.inclusion_summary || '',
+                summaryCallouts(lead)
+              )}</p>
             </article>
           `
         )
@@ -356,7 +394,10 @@ function renderJustMissedList(leads) {
                   <p>${escapeHtml(bestContactLine(lead))}</p>
                 </div>
               </div>
-              <p class="call-card-summary">${escapeHtml(lead.sales_likelihood_summary || lead.inclusion_summary || '')}</p>
+              <p class="call-card-summary">${emphasizeHtml(
+                lead.sales_likelihood_summary || lead.inclusion_summary || '',
+                summaryCallouts(lead)
+              )}</p>
             </article>
           `
         )
@@ -529,24 +570,36 @@ function renderLeads() {
       lead.official_summary ||
       'No additional public concept signal captured yet.';
     node.querySelector('.signals').textContent = signals;
-    node.querySelector('.hearing-summary').textContent =
-      lead.hearing_purpose_summary || 'No hearing-purpose summary generated yet.';
-    node.querySelector('.inclusion-summary').textContent =
-      lead.inclusion_summary || 'No inclusion summary generated yet.';
-    node.querySelector('.sales-summary').textContent =
-      `${lead.sales_fit ? `${lead.sales_fit}. ` : ''}${lead.sales_likelihood_summary || 'No sale-likelihood summary generated yet.'}`;
-    node.querySelector('.distributor-summary').textContent =
+    node.querySelector('.hearing-summary').innerHTML = emphasizeHtml(
+      lead.hearing_purpose_summary || 'No hearing-purpose summary generated yet.',
+      summaryCallouts(lead)
+    );
+    node.querySelector('.inclusion-summary').innerHTML = emphasizeHtml(
+      lead.inclusion_summary || 'No inclusion summary generated yet.',
+      summaryCallouts(lead)
+    );
+    node.querySelector('.sales-summary').innerHTML = emphasizeHtml(
+      `${lead.sales_fit ? `${lead.sales_fit}. ` : ''}${lead.sales_likelihood_summary || 'No sale-likelihood summary generated yet.'}`,
+      summaryCallouts(lead)
+    );
+    node.querySelector('.distributor-summary').innerHTML = emphasizeHtml(
       `${lead.distributor_confidence_label || 'Unknown'}${lead.distributor_name ? ` | ${lead.distributor_name}` : ''}. ${
         lead.distributor_summary || 'No distributor signal generated yet.'
-      }`;
+      }`,
+      summaryCallouts(lead)
+    );
     node.querySelector('.distributor-next-step').textContent =
       lead.distributor_next_step || 'No next-step guidance generated yet.';
-    node.querySelector('.menu-summary').textContent =
-      `${lead.menu_change_label || 'Unknown'}. ${lead.menu_change_summary || 'No menu-comparison summary generated yet.'}`;
-    node.querySelector('.wholesaler-risk-summary').textContent =
+    node.querySelector('.menu-summary').innerHTML = emphasizeHtml(
+      `${lead.menu_change_label || 'Unknown'}. ${lead.menu_change_summary || 'No menu-comparison summary generated yet.'}`,
+      summaryCallouts(lead)
+    );
+    node.querySelector('.wholesaler-risk-summary').innerHTML = emphasizeHtml(
       `${lead.wholesaler_risk_label || 'Unknown'}. ${
         lead.wholesaler_risk_summary || 'No wholesaler-risk summary generated yet.'
-      }`;
+      }`,
+      summaryCallouts(lead)
+    );
 
     node.querySelector('.followup-subject').textContent = lead.suggested_follow_up_subject || '';
     node.querySelector('.followup-body').textContent = lead.suggested_follow_up_body || '';

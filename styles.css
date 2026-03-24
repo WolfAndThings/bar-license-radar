@@ -481,6 +481,16 @@ select:focus {
   line-height: 1.52;
 }
 
+.call-card-summary strong,
+.lead-grid-meta p strong,
+.signals strong,
+.analysis-wrap p strong,
+.followup-subject strong,
+.followup-body strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
 .call-card-meta {
   display: grid;
   gap: 0.8rem;
