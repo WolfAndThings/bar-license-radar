@@ -97,10 +97,18 @@
         </div>
 
         <div id="sourcePanelBody" class="source-panel-body" hidden>
-          <div class="quick-links-wrap">
-            <span class="meta-kicker">All Liquor Licenses</span>
-            <div id="allLicensesLinks" class="quick-link-row"></div>
-          </div>
+          <details class="quick-links-panel">
+            <summary class="quick-links-summary">
+              <div>
+                <span class="meta-kicker">Reference Links</span>
+                <h3 class="quick-links-title">All Liquor Licenses</h3>
+              </div>
+              <span class="quick-links-caret" aria-hidden="true"></span>
+            </summary>
+            <div class="quick-links-wrap">
+              <div id="allLicensesLinks" class="quick-link-row"></div>
+            </div>
+          </details>
 
           <div id="sourceScheduleGrid" class="source-grid"></div>
         </div>

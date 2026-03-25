@@ -1034,11 +1034,37 @@ function renderFestivalList(activity) {
     return;
   }
 
-  renderLeadSection(festivalListEl, ranked, {
-    eyebrow: 'Short-Term',
-    title: 'Festivals + Temporary Licenses',
-    copy: 'Event permits and one-day alcohol activity, kept separate from the main board.'
-  });
+  festivalListEl.innerHTML = '';
+  const wrap = document.createElement('details');
+  wrap.className = 'call-list-fold';
+  wrap.innerHTML = `
+    <summary class="call-list-fold-summary">
+      <div>
+        <p class="eyebrow">Short-Term</p>
+        <h2 class="section-title">Festivals + Temporary Licenses</h2>
+      </div>
+      <div class="call-list-fold-side">
+        <span class="score-badge source-status-badge is-watch">${ranked.length} records</span>
+        <span class="market-location-caret" aria-hidden="true"></span>
+      </div>
+    </summary>
+  `;
+
+  const body = document.createElement('div');
+  body.className = 'call-list-fold-body';
+  const copy = document.createElement('p');
+  copy.className = 'section-copy';
+  copy.textContent = 'Event permits and one-day alcohol activity, kept separate from the main board.';
+  body.appendChild(copy);
+
+  const grid = document.createElement('div');
+  grid.className = 'lead-grid';
+  for (const lead of ranked) {
+    grid.appendChild(buildLeadCardNode(lead));
+  }
+  body.appendChild(grid);
+  wrap.appendChild(body);
+  festivalListEl.appendChild(wrap);
 }
 
 function matchesMarketQuickFilter(item) {
@@ -1123,6 +1149,77 @@ function buildMarketCardNode(item) {
   return node;
 }
 
+function marketGroupLabel(group = {}) {
+  const city = group.city || 'Unknown';
+  const state = group.state || '';
+  return state ? `${city}, ${state}` : city;
+}
+
+function groupMarketRecords(markets = []) {
+  const grouped = new Map();
+
+  for (const item of markets) {
+    const city = item.source_city || 'Unknown';
+    const state = item.source_state || '';
+    const key = `${state}::${city}`;
+    if (!grouped.has(key)) grouped.set(key, { key, city, state, items: [] });
+    grouped.get(key).items.push(item);
+  }
+
+  return [...grouped.values()].sort((a, b) => {
+    const stateDelta = (a.state || '').localeCompare(b.state || '');
+    if (stateDelta !== 0) return stateDelta;
+    return (a.city || '').localeCompare(b.city || '');
+  });
+}
+
+function buildMarketLocationGroup(group, index, totalGroups) {
+  const details = document.createElement('details');
+  details.className = 'market-location-group';
+
+  if (cityFilterEl.value !== 'all' || totalGroups === 1 || index === 0) {
+    details.open = true;
+  }
+
+  const callNowCount = group.items.filter((item) => item.outreach_bucket === 'Call now').length;
+  const distressedCount = group.items.filter((item) => isDistressedMarket(item)).length;
+  const staleCount = group.items.filter((item) => item.market_refresh_status === 'stale').length;
+
+  const summary = document.createElement('summary');
+  summary.className = 'market-location-summary';
+  summary.innerHTML = `
+    <div class="market-location-main">
+      <div class="badge-row">
+        <span class="city-badge">${escapeHtml(group.city)}</span>
+        <span class="status-badge">${escapeHtml(group.state || 'Area')}</span>
+        <span class="score-badge location-count-badge">${group.items.length} accounts</span>
+        ${callNowCount ? `<span class="score-badge source-status-badge is-live">${callNowCount} call now</span>` : ''}
+        ${distressedCount ? `<span class="score-badge source-status-badge is-watch">${distressedCount} distressed</span>` : ''}
+        ${staleCount ? `<span class="score-badge source-status-badge is-blocked">${staleCount} saved snapshot</span>` : ''}
+      </div>
+      <h3 class="market-location-title">${escapeHtml(marketGroupLabel(group))}</h3>
+      <p class="market-location-copy">Collapse or expand this location to scan the accounts inside it.</p>
+    </div>
+    <div class="market-location-side">
+      <span class="market-location-caret" aria-hidden="true"></span>
+    </div>
+  `;
+  details.appendChild(summary);
+
+  const body = document.createElement('div');
+  body.className = 'market-location-body';
+
+  const grid = document.createElement('div');
+  grid.className = 'market-grid';
+  for (const item of group.items) {
+    grid.appendChild(buildMarketCardNode(item));
+  }
+
+  body.appendChild(grid);
+  details.appendChild(body);
+  return details;
+}
+
 function renderMarketList(markets) {
   const filtered = markets.filter((item) => matchesMarketFilters(item) && matchesMarketQuickFilter(item));
 
@@ -1149,12 +1246,15 @@ function renderMarketList(markets) {
   `;
   marketListEl.appendChild(head);
 
-  const grid = document.createElement('div');
-  grid.className = 'market-grid';
-  for (const item of filtered) {
-    grid.appendChild(buildMarketCardNode(item));
+  const groupsWrap = document.createElement('div');
+  groupsWrap.className = 'market-location-stack';
+  const grouped = groupMarketRecords(filtered);
+
+  for (const [index, group] of grouped.entries()) {
+    groupsWrap.appendChild(buildMarketLocationGroup(group, index, grouped.length));
   }
-  marketListEl.appendChild(grid);
+
+  marketListEl.appendChild(groupsWrap);
 }
 
 function matchesBaseFilters(lead) {
