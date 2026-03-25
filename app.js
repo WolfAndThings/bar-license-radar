@@ -14,12 +14,15 @@ const callListEl = document.getElementById('callList');
 const justMissedListEl = document.getElementById('justMissedList');
 const regionalWatchListEl = document.getElementById('regionalWatchList');
 const festivalListEl = document.getElementById('festivalList');
+const marketListEl = document.getElementById('marketList');
 const leadGridEl = document.getElementById('leadGrid');
 const leadCardTemplate = document.getElementById('leadCardTemplate');
+const marketCardTemplate = document.getElementById('marketCardTemplate');
 
 let allLeads = [];
 let allActivity = [];
 let allSources = [];
+let allMarkets = [];
 let activeQuickFilter = 'all';
 
 function preferredContactName(lead) {
@@ -28,6 +31,10 @@ function preferredContactName(lead) {
 
 function hasAnyDirectContact(lead) {
   return Boolean(lead.contact_email || lead.contact_phone || lead.enriched_contact_email || lead.enriched_contact_phone);
+}
+
+function hasMarketContact(item) {
+  return Boolean(item.phone || item.website_url);
 }
 
 function hasOfficialDirectContact(lead) {
@@ -133,6 +140,12 @@ function labelScore(lead) {
   const score = Number(lead.sales_likelihood_score ?? 0);
   const label = lead.sales_likelihood_label || 'Unknown';
   return `${label} ${score}/100`;
+}
+
+function marketRating(item) {
+  const rating = item.rating ? `${item.rating}` : 'No rating';
+  const count = Number(item.review_count || 0);
+  return count ? `${rating} • ${count} reviews` : rating;
 }
 
 function bestContactLine(lead) {
@@ -403,6 +416,10 @@ function renderSummary(leads) {
     {
       label: 'High fit',
       value: leads.filter((lead) => (lead.sales_likelihood_score ?? 0) >= 70).length
+    },
+    {
+      label: 'Bars in area',
+      value: allMarkets.filter(matchesMarketFilters).length
     }
   ];
 
@@ -682,6 +699,92 @@ function renderFestivalList(activity) {
   });
 }
 
+function matchesMarketFilters(item) {
+  const city = cityFilterEl.value;
+  const state = stateFilterEl.value;
+  const status = statusFilterEl.value;
+  const search = searchInputEl.value.trim().toLowerCase();
+
+  if (status !== 'all') return false;
+  if (city !== 'all' && item.source_city !== city) return false;
+  if (state !== 'all' && item.source_state !== state) return false;
+  if (!search) return true;
+
+  return [
+    item.business_name,
+    item.address,
+    item.phone,
+    item.website_url,
+    item.primary_type,
+    item.gap_label,
+    item.gap_summary,
+    item.recent_public_activity_summary
+  ]
+    .join(' ')
+    .toLowerCase()
+    .includes(search);
+}
+
+function buildMarketCardNode(item) {
+  const node = marketCardTemplate.content.cloneNode(true);
+  node.querySelector('.market-city').textContent = item.source_city;
+  node.querySelector('.market-type').textContent = item.primary_type || 'Bar';
+  node.querySelector('.market-gap').textContent = item.gap_label || 'Market';
+  node.querySelector('.market-title').textContent = item.business_name || 'Unnamed bar';
+  node.querySelector('.market-subtitle').textContent = item.address || 'No address captured';
+  node.querySelector('.market-visible').textContent = item.oldest_visible_review_date
+    ? formatDate(item.oldest_visible_review_date)
+    : 'Unknown';
+  node.querySelector('.market-rating').textContent = marketRating(item);
+  node.querySelector('.market-phone').textContent = item.phone || 'No phone captured';
+  node.querySelector('.market-website').textContent = item.website_url || 'No website captured';
+  node.querySelector('.market-status').textContent = formatContactLine(
+    [item.business_status || '', item.open_now ? 'Open now' : 'Hours unknown', item.price_range || ''],
+    'Status unknown'
+  );
+  node.querySelector('.market-activity').textContent = item.recent_public_activity
+    ? formatContactLine([item.recent_public_activity_date ? formatDate(item.recent_public_activity_date) : '', item.recent_public_activity_fit || ''], 'Recent public activity')
+    : 'No recent public activity match';
+  node.querySelector('.market-visible-summary').textContent =
+    item.oldest_visible_review_summary || 'No dated review signal yet.';
+  node.querySelector('.market-gap-summary').textContent = item.gap_summary || 'No gap summary yet.';
+  node.querySelector('.market-links').innerHTML = [
+    linkHtml(item.google_maps_url, 'Google Maps'),
+    linkHtml(item.website_url, 'Website')
+  ]
+    .filter(Boolean)
+    .join('');
+  return node;
+}
+
+function renderMarketList(markets) {
+  const filtered = markets.filter(matchesMarketFilters);
+
+  if (!filtered.length) {
+    marketListEl.innerHTML = '';
+    return;
+  }
+
+  marketListEl.innerHTML = '';
+  const head = document.createElement('div');
+  head.className = 'call-list-head';
+  head.innerHTML = `
+    <div>
+      <p class="eyebrow">Area Inventory</p>
+      <h2 class="section-title">Bars In Area</h2>
+    </div>
+    <p class="section-copy">Separate market coverage from Apify Google Maps so you can see who is already out there, how visible they are, and where recent public activity overlaps.</p>
+  `;
+  marketListEl.appendChild(head);
+
+  const grid = document.createElement('div');
+  grid.className = 'market-grid';
+  for (const item of filtered) {
+    grid.appendChild(buildMarketCardNode(item));
+  }
+  marketListEl.appendChild(grid);
+}
+
 function matchesBaseFilters(lead) {
   const city = cityFilterEl.value;
   const state = stateFilterEl.value;
@@ -834,6 +937,7 @@ function renderLeads() {
   renderJustMissedList(leads);
   renderRegionalWatchList(leads, allActivity);
   renderFestivalList(allActivity);
+  renderMarketList(allMarkets);
   leadCountEl.textContent = String(leads.length);
   leadGridEl.innerHTML = '';
   leadGridEl.hidden = true;
@@ -845,20 +949,23 @@ function renderLeads() {
 }
 
 async function loadDashboard() {
-  const [metaResponse, leadsResponse, activityResponse, sourcesResponse] = await Promise.all([
+  const [metaResponse, leadsResponse, activityResponse, sourcesResponse, marketResponse] = await Promise.all([
     fetch('./data/meta.json'),
     fetch('./data/leads.json'),
     fetch('./data/activity.json'),
-    fetch('./data/sources.json')
+    fetch('./data/sources.json'),
+    fetch('./data/market.json')
   ]);
   const meta = await metaResponse.json();
   const leads = await leadsResponse.json();
   const activity = await activityResponse.json();
   const sources = await sourcesResponse.json();
+  const market = await marketResponse.json();
 
   allLeads = Array.isArray(leads) ? leads : [];
   allActivity = Array.isArray(activity) ? activity : [];
   allSources = Array.isArray(sources) ? sources : [];
+  allMarkets = Array.isArray(market) ? market : [];
   generatedAtEl.textContent = meta?.generated_at ? new Date(meta.generated_at).toLocaleString() : 'Not refreshed yet';
   leadCountEl.textContent = String(allLeads.length);
   renderWarnings(meta);

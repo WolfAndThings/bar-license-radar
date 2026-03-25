@@ -260,6 +260,19 @@
     "notes": "Best place for Rochester agenda packets and final actions."
   },
   {
+    "id": "mn-duluth-agt",
+    "tier": "addon",
+    "state": "MN",
+    "city": "Duluth",
+    "source_name": "Duluth Alcohol, Gambling & Tobacco Commission",
+    "url": "https://duluthmn.gov/boards-commissions/alcohol-gambling-tobacco-commission/",
+    "priority": "medium",
+    "cadence": "Weekly or when a Duluth item posts",
+    "record_type": "agenda PDFs and minutes",
+    "fields_expected": ["agenda date", "applicant", "dba", "address", "license action", "minutes"],
+    "notes": "Useful for Duluth liquor and related alcohol actions. The city posts AGT agendas and minutes on the commission page."
+  },
+  {
     "id": "mn-duluth-liquor-licensing",
     "tier": "addon",
     "state": "MN",

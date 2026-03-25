@@ -75,6 +75,7 @@
       <section id="justMissedList" class="call-list"></section>
       <section id="regionalWatchList" class="call-list"></section>
       <section id="festivalList" class="call-list"></section>
+      <section id="marketList" class="call-list"></section>
       <section id="leadGrid" class="lead-grid" hidden></section>
 
       <section class="source-panel">
@@ -282,6 +283,59 @@
 
         <div class="link-row"></div>
       </article>
+    </template>
+
+    <template id="marketCardTemplate">
+      <details class="market-card">
+        <summary class="market-summary">
+          <div class="market-summary-main">
+            <div class="badge-row">
+              <span class="city-badge market-city"></span>
+              <span class="status-badge market-type"></span>
+              <span class="score-badge market-gap"></span>
+            </div>
+            <h3 class="market-title"></h3>
+            <p class="market-subtitle"></p>
+          </div>
+          <div class="market-summary-side">
+            <span class="meta-kicker">Visible</span>
+            <p class="market-visible"></p>
+            <span class="meta-kicker">Rating</span>
+            <p class="market-rating"></p>
+          </div>
+        </summary>
+        <div class="market-body">
+          <div class="lane-grid-meta lane-grid-meta-compact">
+            <div>
+              <span class="meta-kicker">Phone</span>
+              <p class="market-phone"></p>
+            </div>
+            <div>
+              <span class="meta-kicker">Website</span>
+              <p class="market-website"></p>
+            </div>
+            <div>
+              <span class="meta-kicker">Business status</span>
+              <p class="market-status"></p>
+            </div>
+            <div>
+              <span class="meta-kicker">Recent public activity</span>
+              <p class="market-activity"></p>
+            </div>
+          </div>
+          <div class="analysis-wrap">
+            <div>
+              <span class="meta-kicker">Oldest visible review</span>
+              <p class="market-visible-summary"></p>
+            </div>
+            <div>
+              <span class="meta-kicker">Coverage gap</span>
+              <p class="market-gap-summary"></p>
+            </div>
+          </div>
+          <div class="link-row market-links"></div>
+        </div>
+      </details>
     </template>
 
     <script type="module" src="./app.js"></script>

@@ -35,7 +35,7 @@
       "website_summary": ""
     },
     "enrichment_status": "skipped-low-priority",
-    "property_radar_status": "not_configured",
+    "property_radar_status": "no_match",
     "property_radar_match_label": "",
     "property_radar_radar_id": "",
     "property_radar_owner_name": "",
@@ -761,7 +761,7 @@
       "website_summary": "Groveland Tap"
     },
     "enrichment_status": "ok",
-    "property_radar_status": "not_configured",
+    "property_radar_status": "no_match",
     "property_radar_match_label": "",
     "property_radar_radar_id": "",
     "property_radar_owner_name": "",
@@ -1153,7 +1153,7 @@
       "website_summary": ""
     },
     "enrichment_status": "skipped-low-priority",
-    "property_radar_status": "not_configured",
+    "property_radar_status": "no_match",
     "property_radar_match_label": "",
     "property_radar_radar_id": "",
     "property_radar_owner_name": "",
