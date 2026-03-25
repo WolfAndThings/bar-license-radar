@@ -678,6 +678,30 @@ select:focus {
   color: #1f4f93;
 }
 
+.source-status-badge.is-live {
+  background: #e7f8ef;
+  border-color: #c6e7d5;
+  color: #166b53;
+}
+
+.source-status-badge.is-watch {
+  background: #fff5e9;
+  border-color: #f0d8b4;
+  color: #9a5a12;
+}
+
+.source-status-badge.is-blocked {
+  background: #fdf0f5;
+  border-color: #f0cade;
+  color: #9b3e6b;
+}
+
+.source-status-badge.is-reference {
+  background: #eef2f7;
+  border-color: #d8e0ea;
+  color: #4e6075;
+}
+
 .lead-title {
   margin: 0;
   font-size: 1.58rem;

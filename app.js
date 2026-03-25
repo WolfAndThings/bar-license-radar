@@ -1,5 +1,7 @@
 const generatedAtEl = document.getElementById('generatedAt');
 const leadCountEl = document.getElementById('leadCount');
+const marketCountMetaEl = document.getElementById('marketCountMeta');
+const propertyMatchMetaEl = document.getElementById('propertyMatchMeta');
 const searchInputEl = document.getElementById('searchInput');
 const cityFilterEl = document.getElementById('cityFilter');
 const stateFilterEl = document.getElementById('stateFilter');
@@ -25,6 +27,16 @@ let allSources = [];
 let allMarkets = [];
 let activeQuickFilter = 'all';
 
+const LIVE_SOURCE_IDS = new Set([
+  'mn-minneapolis-public-hearings',
+  'mn-stpaul-license-hearings',
+  'mn-duluth-agt',
+  'nd-fargo-liquor-control-board',
+  'sd-sioux-falls-council'
+]);
+
+const BLOCKED_SOURCE_IDS = new Set(['mn-age-public-data', 'sd-rapid-city-council-agendas', 'sd-rapid-city-license-holders']);
+
 function preferredContactName(lead) {
   return lead.contact_name || lead.enriched_contact_name || '';
 }
@@ -35,6 +47,10 @@ function hasAnyDirectContact(lead) {
 
 function hasMarketContact(item) {
   return Boolean(item.phone || item.website_url);
+}
+
+function propertyRadarMatchCount(pool = []) {
+  return pool.filter((lead) => lead.property_radar_status === 'matched').length;
 }
 
 function hasOfficialDirectContact(lead) {
@@ -127,6 +143,13 @@ function sourceDetailNote(source = {}) {
   return notes.slice(first.length).trim() || `Record type: ${source.record_type || 'Official source'}`;
 }
 
+function sourceStatusInfo(source = {}) {
+  if (LIVE_SOURCE_IDS.has(source.id)) return { label: 'Live', className: 'is-live', rank: 0 };
+  if (BLOCKED_SOURCE_IDS.has(source.id)) return { label: 'Blocked', className: 'is-blocked', rank: 2 };
+  if (source.tier === 'core') return { label: 'Watch', className: 'is-watch', rank: 1 };
+  return { label: 'Reference', className: 'is-reference', rank: 3 };
+}
+
 function isAllLicenseSource(source = {}) {
   const text = [source.source_name, source.record_type, source.notes].filter(Boolean).join(' ');
   return /all active city licenses|license holder|holders|holder list|lookup|statewide lookup/i.test(text);
@@ -186,17 +209,22 @@ function propertyOwnerLine(lead) {
 
 function propertyPressureTopLine(lead) {
   if (lead.property_radar_status === 'not_configured') return 'Not loaded';
-  if (!['matched', 'error'].includes(lead.property_radar_status) && lead.property_radar_status) return 'No match yet';
+  if (lead.property_radar_status === 'error') return 'Lookup error';
+  if (lead.property_radar_status === 'no_match') return 'No parcel match';
+  if (lead.property_radar_status && lead.property_radar_status !== 'matched') return 'No parcel match';
   const bits = [lead.property_radar_property_pressure_label || 'Unknown'];
   if (lead.property_radar_is_listed_for_sale) bits.push('Listed');
   else if (lead.property_radar_is_underwater) bits.push('Underwater');
   else if (lead.property_radar_in_foreclosure) bits.push('Foreclosure');
+  else bits.unshift('Matched');
   return bits.join(' | ');
 }
 
 function areaPressureTopLine(lead) {
   if (lead.property_radar_status === 'not_configured') return 'Not loaded';
-  if (!['matched', 'error'].includes(lead.property_radar_status) && lead.property_radar_status) return 'No match yet';
+  if (lead.property_radar_status === 'error') return 'Lookup error';
+  if (lead.property_radar_status === 'no_match') return 'No parcel match';
+  if (lead.property_radar_status && lead.property_radar_status !== 'matched') return 'No parcel match';
   const bits = [lead.property_radar_area_pressure_label || 'Unknown'];
   if (Number(lead.property_radar_area_for_sale_count || 0) > 0) {
     bits.push(`${lead.property_radar_area_for_sale_count} nearby`);
@@ -213,7 +241,7 @@ function propertyListingLine(lead) {
       lead.property_radar_listing_date ? `Listed ${formatDate(lead.property_radar_listing_date)}` : '',
       lead.property_radar_days_on_market ? `${lead.property_radar_days_on_market} DOM` : ''
     ],
-    'No active property listing signal'
+    'No PropertyRadar listing signal'
   );
 }
 
@@ -225,8 +253,17 @@ function propertyBalanceLine(lead) {
       lead.property_radar_equity_percent ? `Eq ${lead.property_radar_equity_percent}` : '',
       lead.property_radar_distress_score !== '' ? `Distress ${lead.property_radar_distress_score}` : ''
     ],
-    'No debt or equity read yet'
+    'No PropertyRadar debt/equity read yet'
   );
+}
+
+function propertyMatchLine(lead) {
+  if (lead.property_radar_status === 'matched') {
+    return lead.property_radar_match_label || 'Matched parcel';
+  }
+  if (lead.property_radar_status === 'error') return 'Lookup error';
+  if (lead.property_radar_status === 'not_configured') return 'PropertyRadar not configured';
+  return 'No parcel match yet';
 }
 
 function peopleBrief(lead) {
@@ -402,8 +439,8 @@ function renderSummary(leads) {
       value: leads.filter((lead) => hasAnyDirectContact(lead)).length
     },
     {
-      label: 'Needs contact info',
-      value: leads.filter((lead) => !lead.website_url && !hasAnyDirectContact(lead)).length
+      label: 'PR matches',
+      value: propertyRadarMatchCount(allLeads)
     },
     {
       label: 'Property pressure',
@@ -524,6 +561,7 @@ function buildLeadCardNode(lead) {
     'No enriched contact captured yet'
   );
   node.querySelector('.contact-owner').textContent = propertyOwnerLine(lead);
+  node.querySelector('.property-match').textContent = propertyMatchLine(lead);
   node.querySelector('.property-listing').textContent = propertyListingLine(lead);
   node.querySelector('.property-balance').textContent = propertyBalanceLine(lead);
 
@@ -773,7 +811,7 @@ function renderMarketList(markets) {
       <p class="eyebrow">Area Inventory</p>
       <h2 class="section-title">Bars In Area</h2>
     </div>
-    <p class="section-copy">Separate market coverage from Apify Google Maps so you can see who is already out there, how visible they are, and where recent public activity overlaps.</p>
+    <p class="section-copy">Separate market coverage from Apify Google Maps. Showing ${filtered.length} bars so you can see who is already out there, how visible they are, and where recent public activity overlaps.</p>
   `;
   marketListEl.appendChild(head);
 
@@ -866,25 +904,28 @@ function renderAllLicenseLinks(sources) {
 }
 
 function renderSourceSchedule(sources) {
-  const coreSources = [...sources]
-    .filter((source) => source.tier === 'core')
-    .sort((a, b) => priorityWeight(a.priority) - priorityWeight(b.priority) || a.source_name.localeCompare(b.source_name));
+  const scheduleSources = [...sources].sort((a, b) => {
+    const statusDelta = sourceStatusInfo(a).rank - sourceStatusInfo(b).rank;
+    if (statusDelta !== 0) return statusDelta;
+    return priorityWeight(a.priority) - priorityWeight(b.priority) || a.source_name.localeCompare(b.source_name);
+  });
 
-  if (!coreSources.length) {
+  if (!scheduleSources.length) {
     sourceScheduleGridEl.innerHTML = '<p class="empty-state">No source schedule loaded yet.</p>';
     return;
   }
 
-  sourceScheduleGridEl.innerHTML = coreSources
-    .map(
-      (source) => `
+  sourceScheduleGridEl.innerHTML = scheduleSources
+    .map((source) => {
+      const status = sourceStatusInfo(source);
+      return `
         <details class="source-card">
           <summary class="source-summary">
             <div class="source-summary-main">
               <div class="badge-row">
                 <span class="city-badge">${escapeHtml(source.state)}</span>
                 <span class="status-badge">${escapeHtml(source.city)}</span>
-                <span class="score-badge">${escapeHtml(titleCase(source.priority || 'reference'))}</span>
+                <span class="score-badge source-status-badge ${escapeHtml(status.className)}">${escapeHtml(status.label)}</span>
               </div>
               <h3 class="source-title">${escapeHtml(source.source_name)}</h3>
               <p class="source-subtitle">${escapeHtml(sourceBestFor(source))}</p>
@@ -899,6 +940,10 @@ function renderSourceSchedule(sources) {
 
           <div class="source-card-body">
             <div class="source-meta">
+              <div>
+                <span class="meta-kicker">Status</span>
+                <p>${escapeHtml(status.label)}</p>
+              </div>
               <div>
                 <span class="meta-kicker">Check Back</span>
                 <p>${escapeHtml(source.cadence || 'As needed')}</p>
@@ -917,8 +962,8 @@ function renderSourceSchedule(sources) {
             <div class="link-row">${linkHtml(source.url, 'Open source')}</div>
           </div>
         </details>
-      `
-    )
+      `;
+    })
     .join('');
 }
 
@@ -939,6 +984,8 @@ function renderLeads() {
   renderFestivalList(allActivity);
   renderMarketList(allMarkets);
   leadCountEl.textContent = String(leads.length);
+  marketCountMetaEl.textContent = String(allMarkets.filter(matchesMarketFilters).length);
+  propertyMatchMetaEl.textContent = String(propertyRadarMatchCount(allLeads));
   leadGridEl.innerHTML = '';
   leadGridEl.hidden = true;
 
@@ -968,11 +1015,13 @@ async function loadDashboard() {
   allMarkets = Array.isArray(market) ? market : [];
   generatedAtEl.textContent = meta?.generated_at ? new Date(meta.generated_at).toLocaleString() : 'Not refreshed yet';
   leadCountEl.textContent = String(allLeads.length);
+  marketCountMetaEl.textContent = String(allMarkets.length);
+  propertyMatchMetaEl.textContent = String(propertyRadarMatchCount(allLeads));
   renderWarnings(meta);
   renderAllLicenseLinks(allSources);
   renderSourceSchedule(allSources);
 
-  const cityPool = [...allLeads, ...allActivity];
+  const cityPool = [...allLeads, ...allActivity, ...allMarkets];
   const cities = [...new Set(cityPool.map((lead) => lead.source_city).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   for (const city of cities) {
     const option = document.createElement('option');

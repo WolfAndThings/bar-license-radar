@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-03-25T02:52:38.849Z",
+  "generated_at": "2026-03-25T13:17:02.918Z",
   "lead_count": 3,
   "activity_count": 31,
-  "market_count": 237,
+  "market_count": 364,
   "cities": [
     "Minneapolis",
     "St. Paul"
@@ -28,7 +28,7 @@
   },
   "marketInventory": {
     "actor_id": "api-ninja/google-maps-scraper",
-    "market_count": 237,
+    "market_count": 364,
     "warnings": []
   },
   "warnings": [
