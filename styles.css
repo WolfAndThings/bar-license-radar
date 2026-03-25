@@ -383,7 +383,7 @@ h1 {
   top: 0.8rem;
   z-index: 20;
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr) minmax(180px, 1fr);
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
   gap: 0.95rem;
   padding: 1rem 1.05rem;
   margin-bottom: 1rem;
@@ -450,6 +450,7 @@ select:focus {
 
 .call-list {
   margin-bottom: 1rem;
+  scroll-margin-top: 7rem;
 }
 
 .call-list-head {
@@ -532,11 +533,6 @@ select:focus {
   border-color: rgba(31, 79, 147, 0.18);
   box-shadow: 0 12px 24px rgba(16, 35, 58, 0.08);
   transform: translateY(-1px);
-}
-
-.summary-card.is-active {
-  border-color: rgba(31, 79, 147, 0.28);
-  background: #eef5ff;
 }
 
 .summary-card span {

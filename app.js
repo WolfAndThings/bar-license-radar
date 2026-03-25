@@ -13,6 +13,8 @@ const sourceToggleEl = document.getElementById('sourceToggle');
 const sourcePanelBodyEl = document.getElementById('sourcePanelBody');
 const summaryGridEl = document.getElementById('summaryGrid');
 const callListEl = document.getElementById('callList');
+const distressedListEl = document.getElementById('distressedList');
+const establishedListEl = document.getElementById('establishedList');
 const justMissedListEl = document.getElementById('justMissedList');
 const regionalWatchListEl = document.getElementById('regionalWatchList');
 const festivalListEl = document.getElementById('festivalList');
@@ -25,7 +27,6 @@ let allLeads = [];
 let allActivity = [];
 let allSources = [];
 let allMarkets = [];
-let activeQuickFilter = 'all';
 
 const LIVE_SOURCE_IDS = new Set([
   'mn-minneapolis-public-hearings',
@@ -47,6 +48,10 @@ function hasAnyDirectContact(lead) {
 
 function hasMarketContact(item) {
   return Boolean(item.phone || item.website_url);
+}
+
+function currentSearchValue() {
+  return searchInputEl ? searchInputEl.value.trim().toLowerCase() : '';
 }
 
 function recordEntityKey(record = {}) {
@@ -91,8 +96,28 @@ function isBarInTrouble(lead) {
   );
 }
 
+function marketAgeDays(item = {}) {
+  const date = new Date(item.oldest_visible_review_date || '');
+  if (Number.isNaN(date.getTime())) return null;
+  return (Date.now() - date.getTime()) / (24 * 60 * 60 * 1000);
+}
+
+function isDistressedMarket(item = {}) {
+  return isBarInTrouble(item);
+}
+
+function isEstablishedMarket(item = {}) {
+  const ageDays = marketAgeDays(item);
+  if (ageDays === null || ageDays < 365 * 6) return false;
+  if (item.recent_public_activity) return false;
+  if (!hasMarketContact(item)) return false;
+  if (Number(item.review_count || 0) < 75) return false;
+  if (/^bud\s|^budweiser\b|^bud light\b/i.test(item.business_name || '')) return false;
+  return true;
+}
+
 function marketPropertyTopLine(item) {
-  if (item.property_radar_status === 'not_checked') return 'Sample not run';
+  if (item.property_radar_status === 'not_checked') return 'Not checked today';
   if (item.property_radar_status === 'not_configured') return 'Not loaded';
   if (item.property_radar_status === 'error') return 'Lookup error';
   if (item.property_radar_status === 'no_match') return 'No parcel match';
@@ -114,21 +139,21 @@ function marketPropertyOwnerLine(item) {
       item.property_radar_owner_phone,
       item.property_radar_owner_email
     ],
-    item.property_radar_status === 'not_checked' ? 'Not checked in the daily PR sample' : 'No owner signal yet'
+    item.property_radar_status === 'not_checked' ? 'Not checked in today\'s property batch' : 'No owner signal yet'
   );
 }
 
 function marketPropertySummary(item) {
   if (item.property_radar_status === 'not_checked') {
-    return 'Not checked in the daily PropertyRadar sample for market bars.';
+    return 'This bar was not included in today\'s owner/property batch.';
   }
   if (item.property_radar_status === 'no_match') {
-    return 'PropertyRadar did not return a clean parcel match for this bar address in the daily sample.';
+    return 'No clean parcel match came back for this address in today\'s owner/property batch.';
   }
   if (item.property_radar_status === 'error') {
-    return 'PropertyRadar lookup failed on the last refresh.';
+    return 'Owner/property lookup failed on the last refresh.';
   }
-  return item.property_radar_property_pressure_summary || 'No PropertyRadar property pressure signal yet.';
+  return item.property_radar_property_pressure_summary || 'No owner/property pressure signal yet.';
 }
 
 function marketPropertyBadgeClass(item) {
@@ -247,6 +272,15 @@ function labelStatus(status = '') {
   return status.replace(/_/g, ' ');
 }
 
+function leadStageLabel(lead) {
+  if (isUpcomingLead(lead)) return 'Coming up';
+  if (lead.status === 'pending_hearing' || lead.status === 'license_hearing') return 'In hearing';
+  if (isWithinLastDays(lead, 21)) return 'Fresh record';
+  if (lead.sales_fit === 'Existing venue / amendment') return 'Existing venue';
+  if (lead.sales_fit === 'Weak signal / generic code') return 'Weak signal';
+  return titleCase(lead.status || 'Watch');
+}
+
 function labelScore(lead) {
   const score = Number(lead.sales_likelihood_score ?? 0);
   const label = lead.sales_likelihood_label || 'Unknown';
@@ -315,7 +349,7 @@ function areaPressureTopLine(lead) {
   if (lead.property_radar_status && lead.property_radar_status !== 'matched') return 'No parcel match';
   const bits = [lead.property_radar_area_pressure_label || 'Unknown'];
   if (Number(lead.property_radar_area_for_sale_count || 0) > 0) {
-    bits.push(`${lead.property_radar_area_for_sale_count} nearby`);
+    bits.push(`${lead.property_radar_area_for_sale_count} listings`);
   }
   return bits.join(' | ');
 }
@@ -329,7 +363,7 @@ function propertyListingLine(lead) {
       lead.property_radar_listing_date ? `Listed ${formatDate(lead.property_radar_listing_date)}` : '',
       lead.property_radar_days_on_market ? `${lead.property_radar_days_on_market} DOM` : ''
     ],
-    'No PropertyRadar listing signal'
+    'No property listing signal'
   );
 }
 
@@ -341,7 +375,7 @@ function propertyBalanceLine(lead) {
       lead.property_radar_equity_percent ? `Eq ${lead.property_radar_equity_percent}` : '',
       lead.property_radar_distress_score !== '' ? `Distress ${lead.property_radar_distress_score}` : ''
     ],
-    'No PropertyRadar debt/equity read yet'
+    'No debt/equity read yet'
   );
 }
 
@@ -350,7 +384,7 @@ function propertyMatchLine(lead) {
     return lead.property_radar_match_label || 'Matched parcel';
   }
   if (lead.property_radar_status === 'error') return 'Lookup error';
-  if (lead.property_radar_status === 'not_configured') return 'PropertyRadar not configured';
+  if (lead.property_radar_status === 'not_configured') return 'Owner/property data not loaded';
   return 'No parcel match yet';
 }
 
@@ -363,10 +397,7 @@ function peopleBrief(lead) {
 }
 
 function recordBrief(lead) {
-  return formatContactLine(
-    [lead.hearing_date ? formatDate(lead.hearing_date) : '', lead.status ? labelStatus(lead.status) : ''],
-    'Record date'
-  );
+  return lead.hearing_date ? formatDate(lead.hearing_date) : lead.first_public_record_date ? formatDate(lead.first_public_record_date) : 'Record date';
 }
 
 function leadWhyNow(lead) {
@@ -380,7 +411,7 @@ function leadWhyNow(lead) {
 function leadNextMove(lead) {
   if (lead.contact_phone || lead.contact_email) return 'Use the license contact first.';
   if (lead.enriched_contact_phone || lead.enriched_contact_email) return 'Use the enriched web contact first.';
-  if (lead.property_radar_owner_phone || lead.property_radar_owner_email) return 'Try the PropertyRadar owner path next.';
+  if (lead.property_radar_owner_phone || lead.property_radar_owner_email) return 'Try the building-owner contact next.';
   return (
     firstSentence(lead.distributor_next_step || '') ||
     firstSentence(lead.property_radar_next_step || '') ||
@@ -423,7 +454,6 @@ function compactDates(lead) {
 }
 
 function matchesQuickFilter(lead) {
-  if (activeQuickFilter === 'bars_in_trouble') return isBarInTrouble(lead);
   return true;
 }
 
@@ -530,44 +560,34 @@ function renderSummary(leads) {
   const marketPool = allMarkets.filter(matchesMarketFilters);
   const cards = [
     {
-      label: 'Live now',
-      value: leads.filter((lead) => ['pending_hearing', 'license_hearing'].includes(lead.status)).length
+      label: 'Coming up',
+      value: leads.filter((lead) => !isFestivalOrTemporaryLead(lead) && isUpcomingLead(lead)).length,
+      targetId: 'callList'
     },
     {
-      label: 'Bars in trouble',
+      label: 'Fresh leads',
+      value: leads.filter((lead) => !isFestivalOrTemporaryLead(lead) && isWithinLastDays(lead, 30)).length,
+      targetId: 'callList'
+    },
+    {
+      label: 'Distressed bars',
       value: distinctEntityCount([...leads, ...marketPool], isBarInTrouble),
-      filterKey: 'bars_in_trouble'
+      targetId: 'distressedList'
     },
     {
-      label: 'Named contacts',
-      value: leads.filter((lead) => preferredContactName(lead)).length
+      label: 'Established bars',
+      value: distinctEntityCount(marketPool, isEstablishedMarket),
+      targetId: 'establishedList'
     },
     {
       label: 'Direct phone/email',
-      value: leads.filter((lead) => hasAnyDirectContact(lead)).length
-    },
-    {
-      label: 'PR matches',
-      value: propertyRadarMatchCount([...leads, ...marketPool])
-    },
-    {
-      label: 'Property pressure',
-      value: distinctEntityCount(
-        [...leads, ...marketPool],
-        (record) => record.property_radar_property_pressure_label === 'High'
-      )
-    },
-    {
-      label: 'Menu changed',
-      value: leads.filter((lead) => ['moderate_change', 'major_change'].includes(lead.menu_change_signal)).length
-    },
-    {
-      label: 'High fit',
-      value: leads.filter((lead) => (lead.sales_likelihood_score ?? 0) >= 70).length
+      value: leads.filter((lead) => hasAnyDirectContact(lead)).length,
+      targetId: 'callList'
     },
     {
       label: 'Bars in area',
-      value: allMarkets.filter(matchesMarketFilters).length
+      value: marketPool.length,
+      targetId: 'marketList'
     }
   ];
 
@@ -575,8 +595,8 @@ function renderSummary(leads) {
     .map(
       (card) => `
         <article
-          class="summary-card${card.filterKey ? ' is-actionable' : ''}${activeQuickFilter === card.filterKey ? ' is-active' : ''}"
-          ${card.filterKey ? `data-filter-key="${escapeHtml(card.filterKey)}"` : ''}
+          class="summary-card${card.targetId ? ' is-actionable' : ''}"
+          ${card.targetId ? `data-scroll-target="${escapeHtml(card.targetId)}"` : ''}
         >
           <span>${escapeHtml(card.label)}</span>
           <strong>${card.value}</strong>
@@ -629,6 +649,32 @@ function rankLeads(leads) {
     });
 }
 
+function distressedPriority(item) {
+  let score = 0;
+  if (item.property_radar_property_pressure_label === 'High') score += 60;
+  else if (item.property_radar_property_pressure_label === 'Medium') score += 35;
+  if (item.property_radar_is_listed_for_sale) score += 40;
+  if (item.property_radar_is_underwater) score += 32;
+  if (item.property_radar_in_foreclosure) score += 36;
+  if (item.property_radar_in_tax_delinquency) score += 24;
+  if (item.property_radar_in_bankruptcy) score += 24;
+  if (item.property_radar_is_bank_owned) score += 24;
+  if (item.property_radar_owner_name) score += 10;
+  if (hasMarketContact(item)) score += 8;
+  if (item.recent_public_activity) score += 6;
+  return score;
+}
+
+function establishedPriority(item) {
+  const ageDays = marketAgeDays(item) || 0;
+  let score = ageDays / 365;
+  score += Math.min(Number(item.review_count || 0), 600) / 30;
+  if (item.phone) score += 4;
+  if (item.website_url) score += 3;
+  if (item.property_radar_status === 'matched') score += 2;
+  return score;
+}
+
 function isMissedConnectionLead(lead) {
   if (isUpcomingLead(lead)) return false;
   const date = new Date(recordDate(lead));
@@ -640,7 +686,7 @@ function isMissedConnectionLead(lead) {
 function buildLeadCardNode(lead) {
   const node = leadCardTemplate.content.cloneNode(true);
   node.querySelector('.city-badge').textContent = lead.source_city;
-  node.querySelector('.status-badge').textContent = labelStatus(lead.status);
+  node.querySelector('.status-badge').textContent = leadStageLabel(lead);
   node.querySelector('.score-badge').textContent = labelScore(lead);
   node.querySelector('.lead-title').textContent = lead.business_name || 'Unnamed business';
   node.querySelector('.lead-subtitle').textContent = lead.address || lead.official_title || 'No address found yet';
@@ -714,7 +760,7 @@ function buildLeadCardNode(lead) {
     summaryCallouts(lead)
   );
   node.querySelector('.property-pressure-summary').innerHTML = emphasizeHtml(
-    lead.property_radar_property_pressure_summary || 'No PropertyRadar property pressure signal yet.',
+    lead.property_radar_property_pressure_summary || 'No owner/property pressure signal yet.',
     summaryCallouts(lead)
   );
   node.querySelector('.property-area-summary').innerHTML = emphasizeHtml(
@@ -722,7 +768,7 @@ function buildLeadCardNode(lead) {
     summaryCallouts(lead)
   );
   node.querySelector('.property-next-step').textContent =
-    lead.property_radar_next_step || 'No PropertyRadar next step yet.';
+    lead.property_radar_next_step || 'No owner/property next step yet.';
 
   node.querySelector('.followup-subject').textContent = lead.suggested_follow_up_subject || '';
   node.querySelector('.followup-body').textContent = lead.suggested_follow_up_body || '';
@@ -767,6 +813,33 @@ function renderLeadSection(targetEl, leads, { eyebrow, title, copy, empty } = {}
   targetEl.appendChild(grid);
 }
 
+function renderMarketSection(targetEl, items, { eyebrow, title, copy, empty } = {}) {
+  targetEl.innerHTML = '';
+
+  if (!items.length) {
+    if (empty) targetEl.innerHTML = `<p class="empty-state">${escapeHtml(empty)}</p>`;
+    return;
+  }
+
+  const head = document.createElement('div');
+  head.className = 'call-list-head';
+  head.innerHTML = `
+    <div>
+      <p class="eyebrow">${escapeHtml(eyebrow || '')}</p>
+      <h2 class="section-title">${escapeHtml(title || '')}</h2>
+    </div>
+    <p class="section-copy">${escapeHtml(copy || '')}</p>
+  `;
+  targetEl.appendChild(head);
+
+  const grid = document.createElement('div');
+  grid.className = 'market-grid';
+  for (const item of items) {
+    grid.appendChild(buildMarketCardNode(item));
+  }
+  targetEl.appendChild(grid);
+}
+
 function renderCallList(leads) {
   const ranked = rankLeads(leads).slice(0, 6);
 
@@ -776,9 +849,51 @@ function renderCallList(leads) {
   }
 
   renderLeadSection(callListEl, ranked, {
-    eyebrow: 'Call First',
+    eyebrow: 'Openings + Changes',
     title: 'Opportunities',
-    copy: 'Best leads right now, with all of the important detail in one place.'
+    copy: 'Official records worth reading first. This is where upcoming hearings, fresh filings, and operator-change signals show up.'
+  });
+}
+
+function renderDistressedList(leads, markets) {
+  const leadKeys = new Set(leads.map((lead) => recordEntityKey(lead)));
+  const ranked = [...markets]
+    .filter((item) => matchesMarketFilters(item) && isDistressedMarket(item) && !leadKeys.has(recordEntityKey(item)))
+    .sort((a, b) => {
+      const priorityDelta = distressedPriority(b) - distressedPriority(a);
+      if (priorityDelta !== 0) return priorityDelta;
+      return (a.business_name || '').localeCompare(b.business_name || '');
+    })
+    .slice(0, 6);
+
+  renderMarketSection(distressedListEl, ranked, {
+    eyebrow: 'Pressure Accounts',
+    title: 'Distressed Bars',
+    copy: 'Bars with owner or property pressure. These may sell, refinance, or be more open to a fresh distributor conversation.',
+    empty: 'No distressed bars are showing in the current filtered view.'
+  });
+}
+
+function renderEstablishedList(leads, markets) {
+  const excludedKeys = new Set([
+    ...leads.map((lead) => recordEntityKey(lead)),
+    ...markets.filter((item) => isDistressedMarket(item)).map((item) => recordEntityKey(item))
+  ]);
+
+  const ranked = [...markets]
+    .filter((item) => matchesMarketFilters(item) && isEstablishedMarket(item) && !excludedKeys.has(recordEntityKey(item)))
+    .sort((a, b) => {
+      const priorityDelta = establishedPriority(b) - establishedPriority(a);
+      if (priorityDelta !== 0) return priorityDelta;
+      return (a.business_name || '').localeCompare(b.business_name || '');
+    })
+    .slice(0, 8);
+
+  renderMarketSection(establishedListEl, ranked, {
+    eyebrow: 'Long-Running Accounts',
+    title: 'Established Bars To Revisit',
+    copy: 'These bars show older public operating signals and quiet recent activity. "Open by" is the earliest public signal we found, not a verified opening date.',
+    empty: 'No long-running bars matched the current filters.'
   });
 }
 
@@ -851,17 +966,14 @@ function renderFestivalList(activity) {
 }
 
 function matchesMarketQuickFilter(item) {
-  if (activeQuickFilter === 'bars_in_trouble') return isBarInTrouble(item);
   return true;
 }
 
 function matchesMarketFilters(item) {
   const city = cityFilterEl.value;
   const state = stateFilterEl.value;
-  const status = statusFilterEl.value;
-  const search = searchInputEl.value.trim().toLowerCase();
+  const search = currentSearchValue();
 
-  if (status !== 'all') return false;
   if (city !== 'all' && item.source_city !== city) return false;
   if (state !== 'all' && item.source_state !== state) return false;
   if (!search) return true;
@@ -912,8 +1024,9 @@ function buildMarketCardNode(item) {
   node.querySelector('.market-activity').textContent = item.recent_public_activity
     ? formatContactLine([item.recent_public_activity_date ? formatDate(item.recent_public_activity_date) : '', item.recent_public_activity_fit || ''], 'Recent public activity')
     : 'No recent public activity match';
-  node.querySelector('.market-visible-summary').textContent =
-    item.oldest_visible_review_summary || 'No dated review signal yet.';
+  node.querySelector('.market-visible-summary').textContent = item.oldest_visible_review_date
+    ? `Earliest public operating signal in this sample: ${formatDate(item.oldest_visible_review_date)}.`
+    : 'No dated public operating signal was captured yet.';
   node.querySelector('.market-gap-summary').textContent = item.gap_summary || 'No gap summary yet.';
   node.querySelector('.market-property-summary').textContent = marketPropertySummary(item);
   node.querySelector('.market-links').innerHTML = [
@@ -943,7 +1056,7 @@ function renderMarketList(markets) {
       <p class="eyebrow">Area Inventory</p>
       <h2 class="section-title">Bars In Area</h2>
     </div>
-    <p class="section-copy">Separate market coverage from Apify Google Maps. Showing ${filtered.length} bars, with PropertyRadar checked on ${prChecked} daily-sample bars and ${prMatched} parcel matches in the current view.</p>
+    <p class="section-copy">Full market scan for the filtered area. Showing ${filtered.length} bars, with owner/property checks run on ${prChecked} bars today and ${prMatched} parcel matches in this view.</p>
   `;
   marketListEl.appendChild(head);
 
@@ -959,7 +1072,7 @@ function matchesBaseFilters(lead) {
   const city = cityFilterEl.value;
   const state = stateFilterEl.value;
   const status = statusFilterEl.value;
-  const search = searchInputEl.value.trim().toLowerCase();
+  const search = currentSearchValue();
 
   if (city !== 'all' && lead.source_city !== city) return false;
   if (state !== 'all' && lead.source_state !== state) return false;
@@ -1115,6 +1228,8 @@ function renderLeads() {
   const leads = baseLeads.filter(matchesQuickFilter);
   renderSummary(summaryPool);
   renderCallList(leads);
+  renderDistressedList(leads, allMarkets);
+  renderEstablishedList(leads, allMarkets);
   renderJustMissedList(leads);
   renderRegionalWatchList(leads, allActivity);
   renderFestivalList(allActivity);
@@ -1127,7 +1242,6 @@ function renderLeads() {
 
   if (!leads.length) {
     callListEl.innerHTML = '<p class="empty-state">No leads match the current filters.</p>';
-    justMissedListEl.innerHTML = '';
   }
 }
 
@@ -1181,7 +1295,9 @@ async function loadDashboard() {
   renderLeads();
 }
 
-searchInputEl.addEventListener('input', renderLeads);
+if (searchInputEl) {
+  searchInputEl.addEventListener('input', renderLeads);
+}
 cityFilterEl.addEventListener('change', renderLeads);
 stateFilterEl.addEventListener('change', renderLeads);
 statusFilterEl.addEventListener('change', renderLeads);
@@ -1190,11 +1306,12 @@ sourceToggleEl.addEventListener('click', () => {
   updateSourceToggle();
 });
 summaryGridEl.addEventListener('click', (event) => {
-  const card = event.target.closest('[data-filter-key]');
+  const card = event.target.closest('[data-scroll-target]');
   if (!card) return;
-  const key = card.getAttribute('data-filter-key') || 'all';
-  activeQuickFilter = activeQuickFilter === key ? 'all' : key;
-  renderLeads();
+  const targetId = card.getAttribute('data-scroll-target');
+  const target = targetId ? document.getElementById(targetId) : null;
+  if (!target) return;
+  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
 updateSourceToggle();

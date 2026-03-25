@@ -19,8 +19,8 @@
           <p class="eyebrow">MN + ND + SD</p>
           <h1>Bar License Radar</h1>
           <p class="hero-text">
-            Daily board for new bar-license activity, contact paths, market coverage, and follow-up notes across
-            Minnesota, North Dakota, and South Dakota.
+            Open this board and know what matters fast: who may be opening soon, which bars look stressed, and which
+            long-running accounts may be ready for a fresh distributor conversation.
           </p>
         </div>
         <div class="hero-panel">
@@ -37,17 +37,13 @@
             <strong id="marketCountMeta">0</strong>
           </div>
           <div class="meta-row">
-            <span class="meta-label">PropertyRadar matches</span>
+            <span class="meta-label">Owner / property matches</span>
             <strong id="propertyMatchMeta">0</strong>
           </div>
         </div>
       </header>
 
       <section class="controls">
-        <label>
-          <span>Search</span>
-          <input id="searchInput" type="search" placeholder="Business, address, contact, distributor..." />
-        </label>
         <label>
           <span>City</span>
           <select id="cityFilter">
@@ -76,6 +72,8 @@
       <section id="warnings" class="warnings" hidden></section>
       <section id="summaryGrid" class="summary-grid"></section>
       <section id="callList" class="call-list"></section>
+      <section id="distressedList" class="call-list"></section>
+      <section id="establishedList" class="call-list"></section>
       <section id="justMissedList" class="call-list"></section>
       <section id="regionalWatchList" class="call-list"></section>
       <section id="festivalList" class="call-list"></section>
@@ -133,11 +131,11 @@
             <p class="sales-fit-top"></p>
           </div>
           <div>
-            <span class="meta-kicker">PropertyRadar</span>
+            <span class="meta-kicker">Property pressure</span>
             <p class="property-pressure-top"></p>
           </div>
           <div>
-            <span class="meta-kicker">Nearby sales</span>
+            <span class="meta-kicker">Nearby property listings</span>
             <p class="area-pressure-top"></p>
           </div>
         </div>
@@ -211,7 +209,7 @@
                   <p class="contact-enriched"></p>
                 </div>
                 <div>
-                  <span class="meta-kicker">PropertyRadar owner</span>
+                  <span class="meta-kicker">Owner contact</span>
                   <p class="contact-owner"></p>
                 </div>
               </div>
@@ -247,7 +245,7 @@
 
           <details class="lane-card">
             <summary class="lane-summary-row">
-              <span>PropertyRadar</span>
+              <span>Owner + Property</span>
               <span class="lane-summary-chip property-brief"></span>
             </summary>
             <div class="lane-body">
@@ -271,7 +269,7 @@
                   <p class="property-pressure-summary"></p>
                 </div>
                 <div>
-                  <span class="meta-kicker">Area sale activity</span>
+                  <span class="meta-kicker">Nearby property listings</span>
                   <p class="property-area-summary"></p>
                 </div>
                 <div>
@@ -318,7 +316,7 @@
               <p class="market-subtitle"></p>
           </div>
           <div class="market-summary-side">
-            <span class="meta-kicker">Visible</span>
+            <span class="meta-kicker">Open by</span>
             <p class="market-visible"></p>
             <span class="meta-kicker">Rating</span>
             <p class="market-rating"></p>
@@ -339,11 +337,11 @@
               <p class="market-status"></p>
             </div>
             <div>
-              <span class="meta-kicker">PropertyRadar</span>
+              <span class="meta-kicker">Property pressure</span>
               <p class="market-property"></p>
             </div>
             <div>
-              <span class="meta-kicker">PropertyRadar owner</span>
+              <span class="meta-kicker">Owner contact</span>
               <p class="market-owner"></p>
             </div>
             <div>
@@ -353,7 +351,7 @@
           </div>
           <div class="analysis-wrap">
             <div>
-              <span class="meta-kicker">Oldest visible review</span>
+              <span class="meta-kicker">Earliest public signal</span>
               <p class="market-visible-summary"></p>
             </div>
             <div>
@@ -361,7 +359,7 @@
               <p class="market-gap-summary"></p>
             </div>
             <div>
-              <span class="meta-kicker">PropertyRadar read</span>
+              <span class="meta-kicker">Property read</span>
               <p class="market-property-summary"></p>
             </div>
           </div>
