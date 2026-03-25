@@ -33,11 +33,11 @@
             <strong id="leadCount">0</strong>
           </div>
           <div class="meta-row">
-            <span class="meta-label">Bars in area</span>
+            <span class="meta-label">Accounts in area</span>
             <strong id="marketCountMeta">0</strong>
           </div>
           <div class="meta-row">
-            <span class="meta-label">Owner / property matches</span>
+            <span class="meta-label">PR parcel matches</span>
             <strong id="propertyMatchMeta">0</strong>
           </div>
         </div>
@@ -72,6 +72,7 @@
       <section id="warnings" class="warnings" hidden></section>
       <section id="summaryGrid" class="summary-grid"></section>
       <section id="callList" class="call-list"></section>
+      <section id="recentOpeningsList" class="call-list"></section>
       <section id="distressedList" class="call-list"></section>
       <section id="establishedList" class="call-list"></section>
       <section id="justMissedList" class="call-list"></section>
@@ -221,7 +222,7 @@
                   <p class="contact-enriched"></p>
                 </div>
                 <div>
-                  <span class="meta-kicker">Property owner</span>
+                  <span class="meta-kicker">PR owner contact</span>
                   <p class="contact-owner"></p>
                 </div>
               </div>
@@ -324,8 +325,16 @@
             <div class="lane-body">
               <div class="lane-grid-meta">
                 <div>
-                  <span class="meta-kicker">Parcel match</span>
+                  <span class="meta-kicker">PR match</span>
                   <p class="property-match"></p>
+                </div>
+                <div>
+                  <span class="meta-kicker">Owner location</span>
+                  <p class="property-location"></p>
+                </div>
+                <div>
+                  <span class="meta-kicker">Phone tie</span>
+                  <p class="property-phone-tie"></p>
                 </div>
                 <div>
                   <span class="meta-kicker">Listing</span>
@@ -337,6 +346,14 @@
                 </div>
               </div>
               <div class="analysis-wrap">
+                <div>
+                  <span class="meta-kicker">Owner location read</span>
+                  <p class="property-location-summary"></p>
+                </div>
+                <div>
+                  <span class="meta-kicker">Phone tie read</span>
+                  <p class="property-phone-tie-summary"></p>
+                </div>
                 <div>
                   <span class="meta-kicker">Property pressure</span>
                   <p class="property-pressure-summary"></p>
@@ -410,11 +427,11 @@
               <p class="market-status"></p>
             </div>
             <div>
-              <span class="meta-kicker">Owner / property pressure</span>
+              <span class="meta-kicker">Property pressure</span>
               <p class="market-property"></p>
             </div>
             <div>
-              <span class="meta-kicker">Owner / decision path</span>
+              <span class="meta-kicker">PR owner contact</span>
               <p class="market-owner"></p>
             </div>
             <div>
@@ -432,6 +449,10 @@
               <p class="market-gap-summary"></p>
             </div>
             <div>
+              <span class="meta-kicker">Website read</span>
+              <p class="market-website-summary"></p>
+            </div>
+            <div>
               <span class="meta-kicker">Competition</span>
               <p class="market-competition-summary"></p>
             </div>
@@ -440,7 +461,15 @@
               <p class="market-portfolio-summary"></p>
             </div>
             <div>
-              <span class="meta-kicker">Owner / property read</span>
+              <span class="meta-kicker">Owner location</span>
+              <p class="market-owner-location-summary"></p>
+            </div>
+            <div>
+              <span class="meta-kicker">Phone tie</span>
+              <p class="market-phone-tie-summary"></p>
+            </div>
+            <div>
+              <span class="meta-kicker">Property pressure</span>
               <p class="market-property-summary"></p>
             </div>
           </div>

@@ -37,11 +37,18 @@
     "enrichment_status": "skipped-low-priority",
     "property_radar_status": "matched",
     "property_radar_match_label": "3812 W 57TH ST, MINNEAPOLIS, MN 55410",
+    "property_radar_site_address": "3812 W 57TH ST, MINNEAPOLIS, MN 55410",
     "property_radar_radar_id": "PA20545B",
     "property_radar_owner_name": "MARC FILISTER",
     "property_radar_owner_role": "Owner",
     "property_radar_owner_email": "alonventura@yahoo.com",
     "property_radar_owner_phone": "763-234-0566",
+    "property_radar_owner_location_type": "same_site",
+    "property_radar_owner_location_label": "Same as bar address",
+    "property_radar_owner_location_summary": "PropertyRadar says the owner mailing address matches the matched site at 3812 W 57TH ST, MINNEAPOLIS, MN 55410.",
+    "property_radar_phone_tie_type": "same_site_owner_phone",
+    "property_radar_phone_tie_label": "Same-site owner line",
+    "property_radar_phone_tie_summary": "PropertyRadar returned owner phone 763-234-0566. It does not match the public bar line, but the owner mailing address reads as the same site.",
     "property_radar_listing_status": "",
     "property_radar_listing_type": "",
     "property_radar_listing_price": "",
@@ -116,11 +123,11 @@
     "area_bar_count": 57,
     "area_competition_label": "Dense",
     "area_competition_examples": [
-      "Matt's Bar and Grill",
       "Brit's Pub",
-      "French Meadow Cafe & Bluestem Bar"
+      "French Meadow Cafe & Bluestem Bar",
+      "Stanley's Northeast Bar Room"
     ],
-    "area_competition_summary": "Minneapolis currently has 57 tracked bars in the board. Visible peers include Matt's Bar and Grill, Brit's Pub, French Meadow Cafe & Bluestem Bar.",
+    "area_competition_summary": "Minneapolis currently has 57 tracked bars in the board. Visible peers include Brit's Pub, French Meadow Cafe & Bluestem Bar, Stanley's Northeast Bar Room.",
     "owner_portfolio_count": 1,
     "owner_portfolio_summary": "No multi-location pattern is obvious from the current dataset.",
     "city_momentum_label": "Quiet",
@@ -156,7 +163,7 @@
     "contact_role": "co-owner",
     "contact_phone": "612-249-5228",
     "contact_email": "",
-    "website_url": "https://www.grovelandtap.com/contact",
+    "website_url": "https://www.grovelandtap.com/",
     "address": "1834 St Clair Ave",
     "license_type": "Adding a Gambling Location license and Upgrade to full Liquor On Sale and Liquor On Sale Sunday licenses from an existing Wine On Sale and Malt On Sale (Strong) license (which included Sunday service). The establishment will continue to have an existing Liquor Outdoor Service Area (Patio) license.",
     "license_id": "DSIBLLIQ-000561-2026",
@@ -185,46 +192,53 @@
       ],
       "top_results": [
         {
-          "query": "\"Groveland Tap\" \"St. Paul\" contact",
-          "title": "Contact — Groveland Tap",
-          "url": "https://www.grovelandtap.com/contact",
-          "description": "Groveland Tap ... 1834 St. Clair Ave. St. Paul, MN 55105. Follow Us. instagram · facebook.Read more"
+          "query": "\"Clairview Holdings LLC\" \"Groveland Tap\" owner",
+          "title": "City of Saint Paul - File #: SR 26-35",
+          "url": "https://stpaul.legistar.com/LegislationDetail.aspx?ID=7929583&GUID=EA39CA57-03D8-4ACF-8B8B-5AE6B44B9C3C&Options=&Search=",
+          "description": "License Application Summary for Clairview Holdings LLC (License ID# DSIBLLIQ-000561-2026), d/b/a Groveland Tap, Stephanie Shimp, co-owner, 612-249-5228."
         },
         {
-          "query": "\"Groveland Tap\" \"St. Paul\" contact",
-          "title": "Groveland Tap",
-          "url": "https://www.grovelandtap.com/",
-          "description": "Clair Ave. St. Paul, MN 55105. Phone. 651-699-5058. Hours. Monday - Thursday ... Groveland Tap. A Blue Plate Restaurant Company. Hours. Monday - Thursday 11am ...Read more"
+          "query": "\"Clairview Holdings LLC\" \"Groveland Tap\" owner",
+          "title": "Licensing Hearing - MotionCount",
+          "url": "https://motioncount.com/meetings/saintpaulMN_d996229b",
+          "description": "License Application Summary for Clairview Holdings LLC (License ID# DSIBLLIQ-000561-2026), d/b/a Groveland Tap, Stephanie Shimp, co-owner, 612- ...Read more"
         },
         {
-          "query": "\"Groveland Tap\" \"St. Paul\" contact",
-          "title": "Reservations",
-          "url": "https://www.grovelandtap.com/reservations",
-          "description": "Groveland Tap ... 1834 St. Clair Ave. St. Paul, MN 55105. Follow Us. instagram · facebook.Read more"
+          "query": "\"Clairview Holdings LLC\" \"Groveland Tap\" owner",
+          "title": "City Council Legislation Tracker - Assembly Twitter",
+          "url": "https://www.assemblyusa.org/entry/st_paul/sr-26-35",
+          "description": "Title: License Application Summary for Clairview Holdings LLC (License ID# DSIBLLIQ-000561-2026), d/b/a Groveland Tap, Stephanie Shimp, co-owner, 612-249-5228."
         },
         {
-          "query": "\"Groveland Tap\" \"St. Paul\" contact",
-          "title": "GROVELAND TAP - Updated March 2026",
-          "url": "https://www.yelp.com/biz/groveland-tap-st-paul-3",
-          "description": "More info about Groveland Tap · Map · 1834 St Clair Ave. St. Paul, MN 55105 · (651) 699-5058. Call Now · Order Takeout or Delivery. Start Order · Full menu · Hours.Read more"
+          "query": "\"Clairview Holdings LLC\" \"Groveland Tap\" owner",
+          "title": "\"tcCsrf - Fight Copyright Trolls",
+          "url": "https://fightcopyrighttrolls.com/wp-content/uploads/2014/08/hansmeier-14-02948-1.pdf",
+          "description": "Properties LLC (lessor/owner) ... taurant \"Groveland. Tap.\" A specifi.c, though not ... ClairView Holdings LLC, has been on notice of the fact that the facilities ..."
         },
         {
-          "query": "\"Groveland Tap\" \"St. Paul\" contact",
-          "title": "Groveland Tap",
-          "url": "https://www.exploreminnesota.com/profile/groveland-tap/9952",
-          "description": "Groveland Tap. Details. 1834 St Clair Ave St Paul, MN 55105 · (651) 699-5058 · Email · View Website · Get Directions · Map of Groveland Tap. About. A ...Read more"
+          "query": "\"Clairview Holdings LLC\" \"Groveland Tap\" owner",
+          "title": "City Council on 2023-04-26 3:30 PM",
+          "url": "https://stpaul.granicus.com/MediaPlayer.php?view_id=37&clip_id=4353",
+          "description": "... Clairview Holdings LLC (License ID #19980003516), d/b/a Groveland Tap, located at 1834 St. Clair Avenue, to add a new Liquor Outdoor Service Area (Patio) ..."
         }
       ],
-      "website_summary": "Contact &mdash; Groveland Tap"
+      "website_summary": "Groveland Tap"
     },
     "enrichment_status": "ok",
     "property_radar_status": "matched",
     "property_radar_match_label": "1834 SAINT CLAIR AVE, SAINT PAUL, MN 55105",
+    "property_radar_site_address": "1834 SAINT CLAIR AVE, SAINT PAUL, MN 55105",
     "property_radar_radar_id": "PA2FC48A",
     "property_radar_owner_name": "MACGROVE PROPERTIES LLC",
     "property_radar_owner_role": "Owner",
     "property_radar_owner_email": "",
     "property_radar_owner_phone": "",
+    "property_radar_owner_location_type": "separate_mailing",
+    "property_radar_owner_location_label": "Separate owner mailing",
+    "property_radar_owner_location_summary": "PropertyRadar says the owner mailing address is different from the matched bar parcel, so this reads like an off-site owner or landlord path.",
+    "property_radar_phone_tie_type": "unknown",
+    "property_radar_phone_tie_label": "No owner phone",
+    "property_radar_phone_tie_summary": "PropertyRadar matched the parcel, but no owner phone was returned.",
     "property_radar_listing_status": "",
     "property_radar_listing_type": "",
     "property_radar_listing_price": "",
@@ -315,7 +329,7 @@
       "There is at least one public website signal to follow up from."
     ],
     "suggested_follow_up_subject": "Groveland Tap | Adding a Gambling Location license and Upg",
-    "suggested_follow_up_body": "Hi Stephanie,\n\nI saw the public St. Paul record for Groveland Tap at 1834 St Clair Ave tied to Adding a Gambling Location license and Upgrade to full Liquor On Sale and Liquor On Sale Sunday licenses from an existing Wine On Sale and Malt On Sale (Strong) license (which included Sunday service). The establishment will continue to have an existing Liquor Outdoor Service Area (Patio) license.. The public-facing footprint suggests Contact &mdash; Groveland Tap.\n\nI help bars line up opening orders, patio-friendly SKU mixes, and supplier support without overbuying in month one.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi Stephanie,\n\nI saw the public St. Paul record for Groveland Tap at 1834 St Clair Ave tied to Adding a Gambling Location license and Upgrade to full Liquor On Sale and Liquor On Sale Sunday licenses from an existing Wine On Sale and Malt On Sale (Strong) license (which included Sunday service). The establishment will continue to have an existing Liquor Outdoor Service Area (Patio) license.. The public-facing footprint suggests Groveland Tap.\n\nI help bars line up opening orders, patio-friendly SKU mixes, and supplier support without overbuying in month one.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "opportunity",
     "linked_market_id": "market-st-paul-groveland-tap-chij2zkpniaq9ocrionusik2hjw",
     "market_business_status": "OPERATIONAL",
@@ -344,14 +358,14 @@
     "ownership_change_summary": "There are ownership-style words in the public text, but not enough to call it a clean transfer.",
     "hiring_signal_label": "None seen",
     "hiring_signal_summary": "No hiring signal was visible in the public text we captured.",
-    "area_bar_count": 57,
+    "area_bar_count": 56,
     "area_competition_label": "Dense",
     "area_competition_examples": [
       "The Nook",
       "Red Cow St. Paul",
       "The Gnome Craft Pub"
     ],
-    "area_competition_summary": "St. Paul currently has 57 tracked bars in the board. Visible peers include The Nook, Red Cow St. Paul, The Gnome Craft Pub.",
+    "area_competition_summary": "St. Paul currently has 56 tracked bars in the board. Visible peers include The Nook, Red Cow St. Paul, The Gnome Craft Pub.",
     "owner_portfolio_count": 2,
     "owner_portfolio_summary": "MACGROVE PROPERTIES LLC is tied to 2 tracked properties in the current dataset.",
     "city_momentum_label": "Quiet",
@@ -372,7 +386,7 @@
     "outreach_portfolio_fit_score": 72,
     "outreach_score": 74,
     "outreach_bucket": "Call now",
-    "outreach_summary": "Existing account changing | named contact: Stephanie Shimp | high property pressure | 57 tracked bars in St. Paul",
+    "outreach_summary": "Existing account changing | named contact: Stephanie Shimp | high property pressure | 56 tracked bars in St. Paul",
     "outreach_score_line": "Reachability 80 | Revenue 87 | Switch 72 | Timing 60 | Fit 72"
   },
   {
@@ -413,11 +427,18 @@
     "enrichment_status": "skipped-low-priority",
     "property_radar_status": "matched",
     "property_radar_match_label": "630 7TH ST SE, MINNEAPOLIS, MN 55414",
+    "property_radar_site_address": "630 7TH ST SE, MINNEAPOLIS, MN 55414",
     "property_radar_radar_id": "PA211795",
     "property_radar_owner_name": "BRET J ANDERSEN",
     "property_radar_owner_role": "Trustee",
     "property_radar_owner_email": "bretande@pacbell.net",
     "property_radar_owner_phone": "650-380-3067",
+    "property_radar_owner_location_type": "separate_mailing",
+    "property_radar_owner_location_label": "Separate owner mailing",
+    "property_radar_owner_location_summary": "PropertyRadar says the owner mailing address is different from the matched bar parcel, so this reads like an off-site owner or landlord path.",
+    "property_radar_phone_tie_type": "offsite_owner_phone",
+    "property_radar_phone_tie_label": "Off-site owner line",
+    "property_radar_phone_tie_summary": "PropertyRadar returned owner phone 650-380-3067, but it does not match the public bar line and the owner mailing address reads separate from the bar parcel.",
     "property_radar_listing_status": "",
     "property_radar_listing_type": "",
     "property_radar_listing_price": "",
@@ -443,7 +464,7 @@
     "property_radar_area_listing_types": [
       "Market"
     ],
-    "property_radar_next_step": "Use the nearby for-sale property activity as a prospecting map. Check nearby bar operators and ownership changes instead of assuming this specific account is distressed.",
+    "property_radar_next_step": "This looks like an off-site owner or landlord contact. Keep it separate from the bar-manager/operator path and use it when property pressure matters.",
     "hearing_purpose_summary": "The hearing page labels Joe's Market on 8th as BLGeneral, which is a generic business-license code. The public row does not clearly explain the exact liquor action.",
     "inclusion_summary": "Included because the Minneapolis Public Hearings report listed Joe's Market on 8th on 2026-03-03 under LIC429364. The Minneapolis row matched the current filter because it contained the code BLGeneral.",
     "inclusion_reasons": [
@@ -492,11 +513,11 @@
     "area_bar_count": 57,
     "area_competition_label": "Dense",
     "area_competition_examples": [
-      "Matt's Bar and Grill",
       "Brit's Pub",
-      "French Meadow Cafe & Bluestem Bar"
+      "French Meadow Cafe & Bluestem Bar",
+      "Stanley's Northeast Bar Room"
     ],
-    "area_competition_summary": "Minneapolis currently has 57 tracked bars in the board. Visible peers include Matt's Bar and Grill, Brit's Pub, French Meadow Cafe & Bluestem Bar.",
+    "area_competition_summary": "Minneapolis currently has 57 tracked bars in the board. Visible peers include Brit's Pub, French Meadow Cafe & Bluestem Bar, Stanley's Northeast Bar Room.",
     "owner_portfolio_count": 1,
     "owner_portfolio_summary": "No multi-location pattern is obvious from the current dataset.",
     "city_momentum_label": "Quiet",

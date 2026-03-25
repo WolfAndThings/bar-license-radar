@@ -13,6 +13,7 @@ const sourceToggleEl = document.getElementById('sourceToggle');
 const sourcePanelBodyEl = document.getElementById('sourcePanelBody');
 const summaryGridEl = document.getElementById('summaryGrid');
 const callListEl = document.getElementById('callList');
+const recentOpeningsListEl = document.getElementById('recentOpeningsList');
 const distressedListEl = document.getElementById('distressedList');
 const establishedListEl = document.getElementById('establishedList');
 const justMissedListEl = document.getElementById('justMissedList');
@@ -117,6 +118,14 @@ function isEstablishedMarket(item = {}) {
   return true;
 }
 
+function isRecentOpeningMarket(item = {}) {
+  const ageDays = marketAgeDays(item);
+  if (ageDays === null || ageDays > 180) return false;
+  if (!hasMarketContact(item)) return false;
+  if (/^bud\s|^budweiser\b|^bud light\b/i.test(item.business_name || '')) return false;
+  return true;
+}
+
 function marketPropertyTopLine(item) {
   if (item.property_radar_status === 'not_checked') return 'Not checked today';
   if (item.property_radar_status === 'not_configured') return 'Not loaded';
@@ -155,6 +164,40 @@ function marketPropertySummary(item) {
     return 'Owner/property lookup failed on the last refresh.';
   }
   return item.property_radar_property_pressure_summary || 'No owner/property pressure signal yet.';
+}
+
+function marketOwnerLocationSummary(item) {
+  if (item.property_radar_status === 'not_checked') {
+    return 'Not checked in today’s PropertyRadar batch.';
+  }
+  if (item.property_radar_status === 'no_match') {
+    return 'No clean parcel match came back for this address.';
+  }
+  if (item.property_radar_status === 'error') {
+    return 'Owner-location lookup failed on the last refresh.';
+  }
+  return item.property_radar_owner_location_summary || 'No owner-location signal yet.';
+}
+
+function marketPhoneTieSummary(item) {
+  if (item.property_radar_status === 'not_checked') {
+    return 'Not checked in today’s PropertyRadar batch.';
+  }
+  if (item.property_radar_status === 'no_match') {
+    return 'No clean parcel match came back for this address.';
+  }
+  if (item.property_radar_status === 'error') {
+    return 'Phone-tie lookup failed on the last refresh.';
+  }
+  return item.property_radar_phone_tie_summary || 'No phone-tie signal yet.';
+}
+
+function marketWebsiteSummary(item) {
+  if (item.website_signal_summary) return item.website_signal_summary;
+  if (item.website_signal_status === 'skipped-no-website') return 'No website was captured for this newer account yet.';
+  if (item.website_signal_status === 'error') return 'The website read failed on the last refresh.';
+  if (item.website_url) return 'A website is linked, but the current refresh did not get a readable summary from it.';
+  return 'No website read yet.';
 }
 
 function marketPropertyBadgeClass(item) {
@@ -203,6 +246,42 @@ function firstSentence(input = '') {
   if (!text) return '';
   const match = text.match(/^.*?[.!?](?:\s|$)/);
   return (match ? match[0] : text).trim();
+}
+
+function isGenericWhyNowText(input = '') {
+  const text = normalizeCompare(input);
+  if (!text) return true;
+  return (
+    text === 'committee of the whole public hearing' ||
+    text === 'public hearing' ||
+    text === 'licensing hearing' ||
+    text === 'license hearing' ||
+    text === 'license application summary' ||
+    text.startsWith('license application summary for ') ||
+    /^bl[a-z0-9]+$/.test(text) ||
+    /^lic[0-9]+$/.test(text)
+  );
+}
+
+function bestWhyNowText(lead) {
+  const candidates = [
+    lead.official_summary,
+    lead.license_type,
+    lead.hearing_purpose_summary,
+    lead.outreach_summary,
+    lead.property_radar_phone_tie_summary,
+    lead.opening_stage_summary,
+    lead.inclusion_summary
+  ];
+
+  for (const candidate of candidates) {
+    const sentence = firstSentence(candidate || '');
+    if (!sentence) continue;
+    if (isGenericWhyNowText(sentence)) continue;
+    return sentence;
+  }
+
+  return '';
 }
 
 function normalizeWhitespaceForUi(input = '') {
@@ -331,6 +410,60 @@ function propertyOwnerLine(lead) {
   );
 }
 
+function propertyOwnerLocationLine(lead) {
+  if (lead.property_radar_status === 'not_checked') return 'Not checked today';
+  if (lead.property_radar_status === 'not_configured') return 'Not loaded';
+  if (lead.property_radar_status === 'error') return 'Lookup error';
+  if (lead.property_radar_status === 'no_match') return 'No parcel match';
+  return formatContactLine(
+    [
+      lead.property_radar_owner_location_label !== 'Unknown' ? lead.property_radar_owner_location_label : '',
+      lead.property_radar_site_address ? `Site ${lead.property_radar_site_address}` : ''
+    ],
+    'No owner-location read yet'
+  );
+}
+
+function propertyPhoneTieLine(lead) {
+  if (lead.property_radar_status === 'not_checked') return 'Not checked today';
+  if (lead.property_radar_status === 'not_configured') return 'Not loaded';
+  if (lead.property_radar_status === 'error') return 'Lookup error';
+  if (lead.property_radar_status === 'no_match') return 'No parcel match';
+  return formatContactLine(
+    [
+      lead.property_radar_phone_tie_label !== 'Unknown' ? lead.property_radar_phone_tie_label : '',
+      lead.property_radar_owner_phone || ''
+    ],
+    'No phone-tie read yet'
+  );
+}
+
+function propertyOwnerLocationSummary(lead) {
+  if (lead.property_radar_status === 'not_checked') {
+    return 'This lead was not included in today’s PropertyRadar owner-location batch.';
+  }
+  if (lead.property_radar_status === 'no_match') {
+    return 'No parcel match came back, so there is no owner-location read yet.';
+  }
+  if (lead.property_radar_status === 'error') {
+    return 'Owner-location lookup failed on the last refresh.';
+  }
+  return lead.property_radar_owner_location_summary || 'No owner-location signal yet.';
+}
+
+function propertyPhoneTieSummary(lead) {
+  if (lead.property_radar_status === 'not_checked') {
+    return 'This lead was not included in today’s PropertyRadar phone-tie batch.';
+  }
+  if (lead.property_radar_status === 'no_match') {
+    return 'No parcel match came back, so there is no phone-tie read yet.';
+  }
+  if (lead.property_radar_status === 'error') {
+    return 'Phone-tie lookup failed on the last refresh.';
+  }
+  return lead.property_radar_phone_tie_summary || 'No phone-tie signal yet.';
+}
+
 function propertyPressureTopLine(lead) {
   if (lead.property_radar_status === 'not_configured') return 'Not loaded';
   if (lead.property_radar_status === 'error') return 'Lookup error';
@@ -383,7 +516,7 @@ function propertyBalanceLine(lead) {
 
 function propertyMatchLine(lead) {
   if (lead.property_radar_status === 'matched') {
-    return lead.property_radar_match_label || 'Matched parcel';
+    return lead.property_radar_site_address || lead.property_radar_match_label || 'Matched parcel';
   }
   if (lead.property_radar_status === 'error') return 'Lookup error';
   if (lead.property_radar_status === 'not_configured') return 'Owner/property data not loaded';
@@ -404,18 +537,15 @@ function recordBrief(lead) {
 }
 
 function leadWhyNow(lead) {
-  return (
-    firstSentence(lead.outreach_summary || '') ||
-    firstSentence(lead.opening_stage_summary || '') ||
-    firstSentence(lead.hearing_purpose_summary || '') ||
-    firstSentence(lead.inclusion_summary || '') ||
-    'Open the record for the clearest hearing detail.'
-  );
+  return bestWhyNowText(lead) || 'Open the record for the clearest hearing detail.';
 }
 
 function leadNextMove(lead) {
   if (lead.decision_maker_phone || lead.decision_maker_email) {
     return `Start with the ${lead.decision_maker_source_label || 'best contact'} path.`;
+  }
+  if (lead.property_radar_phone_tie_type === 'matches_bar_phone' && lead.property_radar_owner_phone) {
+    return 'The PR owner phone matches the public bar line. Treat it as a direct path and confirm who answers.';
   }
   if (lead.contact_phone || lead.contact_email) return 'Use the license contact first.';
   if (lead.enriched_contact_phone || lead.enriched_contact_email) return 'Use the enriched web contact first.';
@@ -470,14 +600,21 @@ function actionTopLine(record) {
 
 function marketBestPathLine(item) {
   return formatContactLine(
-    [item.phone, item.website_url, item.property_radar_owner_phone, item.property_radar_owner_email],
+    [
+      item.website_signal_contact_phone,
+      item.website_signal_contact_email,
+      item.phone,
+      item.website_url,
+      item.property_radar_owner_phone,
+      item.property_radar_owner_email
+    ],
     'No direct path captured yet'
   );
 }
 
 function marketAccountReadLine(item) {
   return formatContactLine(
-    [item.opening_stage_label, item.account_type_label, item.estimated_account_size_label],
+    [item.opening_stage_label, item.account_type_label, item.estimated_account_size_label, item.website_signal_summary ? 'Site read live' : ''],
     'Account read pending'
   );
 }
@@ -546,6 +683,8 @@ function summaryCallouts(lead) {
     lead.sales_likelihood_label,
     lead.property_radar_property_pressure_label,
     lead.property_radar_area_pressure_label,
+    lead.property_radar_owner_location_label,
+    lead.property_radar_phone_tie_label,
     lead.menu_change_label,
     lead.wholesaler_risk_label,
     lead.underserved_program_label,
@@ -626,14 +765,14 @@ function renderSummary(leads) {
   const marketPool = allMarkets.filter(matchesMarketFilters);
   const cards = [
     {
-      label: 'Coming up',
-      value: leads.filter((lead) => !isFestivalOrTemporaryLead(lead) && lead.opening_stage_label === 'Opening soon').length,
+      label: 'In licensing',
+      value: leads.filter((lead) => !isFestivalOrTemporaryLead(lead) && lead.opening_stage_label === 'Pre-open / licensing').length,
       targetId: 'callList'
     },
     {
-      label: 'Just opened',
-      value: leads.filter((lead) => !isFestivalOrTemporaryLead(lead) && lead.opening_stage_label === 'Just opened').length,
-      targetId: 'callList'
+      label: 'Newer accounts',
+      value: distinctEntityCount(marketPool, isRecentOpeningMarket),
+      targetId: 'recentOpeningsList'
     },
     {
       label: 'Distressed bars',
@@ -651,7 +790,7 @@ function renderSummary(leads) {
       targetId: 'callList'
     },
     {
-      label: 'Bars in area',
+      label: 'Accounts in area',
       value: marketPool.length,
       targetId: 'marketList'
     }
@@ -676,11 +815,22 @@ function callPriority(lead) {
   let priority = Number(lead.outreach_score ?? lead.sales_likelihood_score ?? 0);
   if (lead.outreach_bucket === 'Call now') priority += 18;
   else if (lead.outreach_bucket === 'Watch closely') priority += 8;
-  if (lead.opening_stage_label === 'Opening soon') priority += 16;
+  if (lead.opening_stage_label === 'Pre-open / licensing') priority += 16;
   else if (lead.opening_stage_label === 'Just opened') priority += 10;
+  else if (lead.opening_stage_label === 'Fresh license activity') priority += 8;
   if (lead.decision_maker_phone || lead.decision_maker_email) priority += 10;
   if (lead.ownership_change_signal_label === 'Strong') priority += 8;
   return priority;
+}
+
+function recentOpeningPriority(item) {
+  const ageDays = marketAgeDays(item);
+  let score = Number(item.outreach_score ?? 0);
+  if (ageDays !== null) score += Math.max(0, 180 - ageDays) / 6;
+  if (item.website_signal_summary) score += 12;
+  if (item.website_signal_contact_phone || item.website_signal_contact_email) score += 10;
+  if (item.recent_public_activity) score += 8;
+  return score;
 }
 
 function rankLeads(leads) {
@@ -789,6 +939,8 @@ function buildLeadCardNode(lead) {
   node.querySelector('.competition-summary').textContent = lead.area_competition_summary || 'No competition read yet.';
   node.querySelector('.portfolio-summary').textContent = lead.owner_portfolio_summary || 'No owner-footprint read yet.';
   node.querySelector('.property-match').textContent = propertyMatchLine(lead);
+  node.querySelector('.property-location').textContent = propertyOwnerLocationLine(lead);
+  node.querySelector('.property-phone-tie').textContent = propertyPhoneTieLine(lead);
   node.querySelector('.property-listing').textContent = propertyListingLine(lead);
   node.querySelector('.property-balance').textContent = propertyBalanceLine(lead);
 
@@ -837,6 +989,14 @@ function buildLeadCardNode(lead) {
   );
   node.querySelector('.property-pressure-summary').innerHTML = emphasizeHtml(
     lead.property_radar_property_pressure_summary || 'No owner/property pressure signal yet.',
+    summaryCallouts(lead)
+  );
+  node.querySelector('.property-location-summary').innerHTML = emphasizeHtml(
+    propertyOwnerLocationSummary(lead),
+    summaryCallouts(lead)
+  );
+  node.querySelector('.property-phone-tie-summary').innerHTML = emphasizeHtml(
+    propertyPhoneTieSummary(lead),
     summaryCallouts(lead)
   );
   node.querySelector('.property-area-summary').innerHTML = emphasizeHtml(
@@ -925,9 +1085,28 @@ function renderCallList(leads) {
   }
 
   renderLeadSection(callListEl, ranked, {
-    eyebrow: 'Openings + Changes',
+    eyebrow: 'Pre-Open + Changes',
     title: 'Opportunities',
-    copy: 'Official records worth reading first. This is where upcoming hearings, fresh filings, and operator-change signals show up.'
+    copy: 'Official records worth reading first. License filings usually happen well before opening, so treat this lane as pre-open pipeline and operator-change signal.'
+  });
+}
+
+function renderRecentOpeningsList(leads, markets) {
+  const leadKeys = new Set(leads.map((lead) => recordEntityKey(lead)));
+  const ranked = [...markets]
+    .filter((item) => matchesMarketFilters(item) && isRecentOpeningMarket(item) && !leadKeys.has(recordEntityKey(item)) && !isDistressedMarket(item))
+    .sort((a, b) => {
+      const priorityDelta = recentOpeningPriority(b) - recentOpeningPriority(a);
+      if (priorityDelta !== 0) return priorityDelta;
+      return (b.oldest_visible_review_date || '').localeCompare(a.oldest_visible_review_date || '');
+    })
+    .slice(0, 8);
+
+  renderMarketSection(recentOpeningsListEl, ranked, {
+    eyebrow: 'Market Read',
+    title: 'Opened In Last 6 Months',
+    copy: 'These accounts look newer based on public operating signals and website reads. This is market evidence, not a confirmed opening date from the license file.',
+    empty: 'No newer accounts matched the current filters.'
   });
 }
 
@@ -1085,6 +1264,11 @@ function matchesMarketFilters(item) {
     item.address,
     item.phone,
     item.website_url,
+    item.website_signal_summary,
+    item.website_signal_contact_name,
+    item.website_signal_contact_role,
+    item.website_signal_contact_email,
+    item.website_signal_contact_phone,
     item.primary_type,
     item.account_type_label,
     item.opening_stage_label,
@@ -1099,6 +1283,10 @@ function matchesMarketFilters(item) {
     item.property_radar_owner_name,
     item.property_radar_owner_email,
     item.property_radar_owner_phone,
+    item.property_radar_owner_location_label,
+    item.property_radar_owner_location_summary,
+    item.property_radar_phone_tie_label,
+    item.property_radar_phone_tie_summary,
     item.property_radar_property_pressure_label,
     item.property_radar_property_pressure_summary,
     item.property_radar_area_pressure_summary
@@ -1126,10 +1314,10 @@ function buildMarketCardNode(item) {
   node.querySelector('.market-website').textContent = marketAccountReadLine(item);
   node.querySelector('.market-status').textContent = marketOperatingLine(item);
   node.querySelector('.market-property').textContent = marketPropertyTopLine(item);
-  node.querySelector('.market-owner').textContent = formatContactLine(
-    [item.decision_maker_line, item.property_radar_owner_name ? `Owner ${item.property_radar_owner_name}` : ''],
-    marketPropertyOwnerLine(item)
-  );
+  node.querySelector('.market-owner').textContent =
+    item.decision_maker_line && item.decision_maker_line !== 'No named decision maker yet'
+      ? item.decision_maker_line
+      : marketPropertyOwnerLine(item);
   node.querySelector('.market-activity').textContent = item.recent_public_activity
     ? formatContactLine([item.recent_public_activity_date ? formatDate(item.recent_public_activity_date) : '', item.recent_public_activity_fit || ''], 'Recent public activity')
     : 'No recent public activity match';
@@ -1137,8 +1325,11 @@ function buildMarketCardNode(item) {
     ? `Earliest public operating signal in this sample: ${formatDate(item.oldest_visible_review_date)}.`
     : 'No dated public operating signal was captured yet.';
   node.querySelector('.market-gap-summary').textContent = `${item.underserved_program_label || 'Unknown'}. ${item.underserved_program_summary || 'No program read yet.'}`;
+  node.querySelector('.market-website-summary').textContent = marketWebsiteSummary(item);
   node.querySelector('.market-competition-summary').textContent = item.area_competition_summary || 'No competition read yet.';
   node.querySelector('.market-portfolio-summary').textContent = item.owner_portfolio_summary || 'No owner-footprint read yet.';
+  node.querySelector('.market-owner-location-summary').textContent = marketOwnerLocationSummary(item);
+  node.querySelector('.market-phone-tie-summary').textContent = marketPhoneTieSummary(item);
   node.querySelector('.market-property-summary').textContent = marketPropertySummary(item);
   node.querySelector('.market-links').innerHTML = [
     linkHtml(item.google_maps_url, 'Google Maps'),
@@ -1438,6 +1629,7 @@ function renderLeads() {
   const leads = baseLeads.filter(matchesQuickFilter);
   renderSummary(summaryPool);
   renderCallList(leads);
+  renderRecentOpeningsList(leads, allMarkets);
   renderDistressedList(leads, allMarkets);
   renderEstablishedList(leads, allMarkets);
   renderJustMissedList(leads);
