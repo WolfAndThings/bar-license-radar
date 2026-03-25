@@ -226,8 +226,8 @@ function peopleBrief(lead) {
 
 function recordBrief(lead) {
   return formatContactLine(
-    [lead.license_type, lead.hearing_date ? formatDate(lead.hearing_date) : '', lead.status ? labelStatus(lead.status) : ''],
-    'Record details'
+    [lead.hearing_date ? formatDate(lead.hearing_date) : '', lead.status ? labelStatus(lead.status) : ''],
+    'Record date'
   );
 }
 
@@ -240,6 +240,29 @@ function distributorBrief(lead) {
 
 function propertyBrief(lead) {
   return `${propertyPressureTopLine(lead)} | ${areaPressureTopLine(lead)}`;
+}
+
+function normalizeCompare(input = '') {
+  return normalizeWhitespaceForUi(String(input || '').toLowerCase());
+}
+
+function isLicenseRedundant(lead) {
+  const license = normalizeCompare(lead.license_type);
+  if (!license) return true;
+
+  const official = normalizeCompare([lead.official_title, lead.official_summary].filter(Boolean).join(' '));
+  return official.includes(license);
+}
+
+function compactDates(lead) {
+  const hearing = formatDate(lead.hearing_date);
+  const first = formatDate(lead.first_public_record_date);
+
+  if ((lead.hearing_date || '') && (lead.first_public_record_date || '') && lead.hearing_date === lead.first_public_record_date) {
+    return `Record date: ${hearing}`;
+  }
+
+  return `Hearing: ${hearing}\nFirst public record: ${first}`;
 }
 
 function matchesQuickFilter(lead) {
@@ -466,10 +489,15 @@ function buildLeadCardNode(lead) {
   node.querySelector('.property-brief').textContent = propertyBrief(lead);
   node.querySelector('.outreach-brief').textContent = 'Suggested note ready';
   node.querySelector('.applicant').textContent = lead.applicant_entity || 'Unavailable';
-  node.querySelector('.license').textContent = lead.license_type || 'Unavailable';
-  node.querySelector('.dates').textContent = `Hearing: ${formatDate(lead.hearing_date)}\nFirst public record: ${formatDate(
-    lead.first_public_record_date
-  )}`;
+  const licenseEl = node.querySelector('.license');
+  const licenseBlockEl = licenseEl.closest('div');
+  if (isLicenseRedundant(lead)) {
+    licenseBlockEl.hidden = true;
+  } else {
+    licenseEl.textContent = lead.license_type || 'Unavailable';
+    licenseBlockEl.hidden = false;
+  }
+  node.querySelector('.dates').textContent = compactDates(lead);
   node.querySelector('.contact-official').textContent = formatContactLine(
     [lead.contact_name, lead.contact_role, lead.contact_email, lead.contact_phone],
     'No official contact signal captured yet'
@@ -610,7 +638,11 @@ function renderRegionalWatchList(leads, activity) {
   const opportunityIds = new Set(leads.map((lead) => lead.id));
   const ranked = rankLeads(
     activity.filter(
-      (lead) => ['ND', 'SD'].includes(lead.source_state) && !opportunityIds.has(lead.id) && matchesFilters(lead)
+      (lead) =>
+        ['ND', 'SD'].includes(lead.source_state) &&
+        !opportunityIds.has(lead.id) &&
+        !isFestivalOrTemporaryLead(lead) &&
+        matchesFilters(lead)
     )
   ).slice(0, 6);
 
