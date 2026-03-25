@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-03-25T13:17:02.918Z",
+  "generated_at": "2026-03-25T14:24:53.913Z",
   "lead_count": 3,
   "activity_count": 31,
-  "market_count": 364,
+  "market_count": 352,
   "cities": [
     "Minneapolis",
     "St. Paul"
@@ -23,12 +23,16 @@
   "propertyRadar": {
     "configured": true,
     "selected_env": "PROPERTYRADAR_TOKEN",
-    "matched_count": 0,
+    "checked_count": 3,
+    "matched_count": 3,
     "last_error": ""
   },
   "marketInventory": {
     "actor_id": "api-ninja/google-maps-scraper",
-    "market_count": 364,
+    "market_count": 352,
+    "property_radar_checked_count": 18,
+    "property_radar_matched_count": 9,
+    "property_radar_limit": 18,
     "warnings": []
   },
   "warnings": [

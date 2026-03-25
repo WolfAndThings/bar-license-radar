@@ -19,8 +19,8 @@
           <p class="eyebrow">MN + ND + SD</p>
           <h1>Bar License Radar</h1>
           <p class="hero-text">
-            Daily operating board for bar and liquor-license opportunities, follow-up contacts, distributor clues,
-            and outreach notes across Minnesota, North Dakota, and South Dakota.
+            Daily board for new bar-license activity, contact paths, market coverage, and follow-up notes across
+            Minnesota, North Dakota, and South Dakota.
           </p>
         </div>
         <div class="hero-panel">
@@ -90,7 +90,7 @@
           </div>
           <div class="section-head-side">
             <p class="section-copy">
-              This is reference material for coverage and checkback timing. The main board above should show the best opportunities first.
+              Reference coverage and checkback timing. The board above should show the best places to work first.
             </p>
             <button id="sourceToggle" class="section-toggle" type="button" aria-expanded="false" aria-controls="sourcePanelBody">
               Show sources
@@ -142,8 +142,19 @@
           </div>
         </div>
 
+        <div class="lead-preview">
+          <div>
+            <span class="meta-kicker">Why now</span>
+            <p class="lead-preview-why"></p>
+          </div>
+          <div>
+            <span class="meta-kicker">Next move</span>
+            <p class="lead-preview-next"></p>
+          </div>
+        </div>
+
         <div class="lane-stack">
-          <details class="lane-card" open>
+          <details class="lane-card">
             <summary class="lane-summary-row">
               <span>Record</span>
               <span class="lane-summary-chip record-brief"></span>
@@ -296,14 +307,15 @@
     <template id="marketCardTemplate">
       <details class="market-card">
         <summary class="market-summary">
-          <div class="market-summary-main">
-            <div class="badge-row">
-              <span class="city-badge market-city"></span>
-              <span class="status-badge market-type"></span>
-              <span class="score-badge market-gap"></span>
-            </div>
-            <h3 class="market-title"></h3>
-            <p class="market-subtitle"></p>
+            <div class="market-summary-main">
+              <div class="badge-row">
+                <span class="city-badge market-city"></span>
+                <span class="status-badge market-type"></span>
+                <span class="score-badge market-gap"></span>
+                <span class="score-badge market-pr-badge"></span>
+              </div>
+              <h3 class="market-title"></h3>
+              <p class="market-subtitle"></p>
           </div>
           <div class="market-summary-side">
             <span class="meta-kicker">Visible</span>
@@ -327,6 +339,14 @@
               <p class="market-status"></p>
             </div>
             <div>
+              <span class="meta-kicker">PropertyRadar</span>
+              <p class="market-property"></p>
+            </div>
+            <div>
+              <span class="meta-kicker">PropertyRadar owner</span>
+              <p class="market-owner"></p>
+            </div>
+            <div>
               <span class="meta-kicker">Recent public activity</span>
               <p class="market-activity"></p>
             </div>
@@ -339,6 +359,10 @@
             <div>
               <span class="meta-kicker">Coverage gap</span>
               <p class="market-gap-summary"></p>
+            </div>
+            <div>
+              <span class="meta-kicker">PropertyRadar read</span>
+              <p class="market-property-summary"></p>
             </div>
           </div>
           <div class="link-row market-links"></div>

@@ -568,9 +568,9 @@ select:focus {
 
 .lead-card {
   border-radius: var(--radius-xl);
-  padding: 1.2rem 1.2rem 1.25rem;
+  padding: 1.08rem 1.08rem 1.15rem;
   display: grid;
-  gap: 0.95rem;
+  gap: 0.82rem;
   background: #ffffff;
   box-shadow: var(--shadow);
 }
@@ -672,6 +672,12 @@ select:focus {
   color: #166b53;
 }
 
+.market-pr-badge {
+  background: #edf5fb;
+  border-color: #cfe0ec;
+  color: #0f4f6b;
+}
+
 .city-badge {
   background: #eaf2ff;
   border-color: #cddcff;
@@ -704,7 +710,7 @@ select:focus {
 
 .lead-title {
   margin: 0;
-  font-size: 1.58rem;
+  font-size: 1.48rem;
   line-height: 1.1;
   color: #10233a;
 }
@@ -722,7 +728,14 @@ select:focus {
   gap: 0.75rem;
 }
 
+.lead-preview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
 .lead-strip > div,
+.lead-preview > div,
 .lane-grid-meta > div,
 .analysis-wrap > div,
 .lane-copy {
@@ -733,6 +746,7 @@ select:focus {
 }
 
 .lead-strip p,
+.lead-preview p,
 .lane-grid-meta p,
 .lane-copy p,
 .followup-subject,
@@ -745,6 +759,11 @@ select:focus {
 }
 
 .lead-strip p {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.lead-preview p {
   font-weight: 600;
   color: var(--ink);
 }
@@ -955,6 +974,7 @@ select:focus {
   .summary-grid,
   .source-grid,
   .lead-strip,
+  .lead-preview,
   .lane-grid-meta,
   .analysis-wrap {
     grid-template-columns: 1fr;

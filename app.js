@@ -49,8 +49,18 @@ function hasMarketContact(item) {
   return Boolean(item.phone || item.website_url);
 }
 
+function recordEntityKey(record = {}) {
+  return [record.business_name, record.source_city, record.address]
+    .map((value) => String(value || '').toLowerCase().replace(/\s+/g, ' ').trim())
+    .join('::');
+}
+
 function propertyRadarMatchCount(pool = []) {
-  return pool.filter((lead) => lead.property_radar_status === 'matched').length;
+  return new Set(pool.filter((lead) => lead.property_radar_status === 'matched').map((lead) => recordEntityKey(lead))).size;
+}
+
+function distinctEntityCount(pool = [], predicate) {
+  return new Set(pool.filter((record) => predicate(record)).map((record) => recordEntityKey(record))).size;
 }
 
 function hasOfficialDirectContact(lead) {
@@ -79,6 +89,59 @@ function isBarInTrouble(lead) {
     lead.property_radar_in_bankruptcy ||
     lead.property_radar_is_bank_owned
   );
+}
+
+function marketPropertyTopLine(item) {
+  if (item.property_radar_status === 'not_checked') return 'Sample not run';
+  if (item.property_radar_status === 'not_configured') return 'Not loaded';
+  if (item.property_radar_status === 'error') return 'Lookup error';
+  if (item.property_radar_status === 'no_match') return 'No parcel match';
+  if (item.property_radar_status === 'matched') {
+    const bits = [item.property_radar_property_pressure_label || 'Matched'];
+    if (item.property_radar_is_listed_for_sale) bits.push('Listed');
+    else if (item.property_radar_is_underwater) bits.push('Underwater');
+    else if (item.property_radar_in_foreclosure) bits.push('Foreclosure');
+    return bits.join(' | ');
+  }
+  return 'No parcel match';
+}
+
+function marketPropertyOwnerLine(item) {
+  return formatContactLine(
+    [
+      item.property_radar_owner_name,
+      item.property_radar_owner_role,
+      item.property_radar_owner_phone,
+      item.property_radar_owner_email
+    ],
+    item.property_radar_status === 'not_checked' ? 'Not checked in the daily PR sample' : 'No owner signal yet'
+  );
+}
+
+function marketPropertySummary(item) {
+  if (item.property_radar_status === 'not_checked') {
+    return 'Not checked in the daily PropertyRadar sample for market bars.';
+  }
+  if (item.property_radar_status === 'no_match') {
+    return 'PropertyRadar did not return a clean parcel match for this bar address in the daily sample.';
+  }
+  if (item.property_radar_status === 'error') {
+    return 'PropertyRadar lookup failed on the last refresh.';
+  }
+  return item.property_radar_property_pressure_summary || 'No PropertyRadar property pressure signal yet.';
+}
+
+function marketPropertyBadgeClass(item) {
+  if (item.property_radar_status === 'matched' && item.property_radar_property_pressure_label === 'High') {
+    return 'is-blocked';
+  }
+  if (item.property_radar_status === 'matched' && item.property_radar_property_pressure_label === 'Medium') {
+    return 'is-watch';
+  }
+  if (item.property_radar_status === 'matched') {
+    return 'is-live';
+  }
+  return 'is-reference';
 }
 
 function isFestivalOrTemporaryLead(lead) {
@@ -148,6 +211,31 @@ function sourceStatusInfo(source = {}) {
   if (BLOCKED_SOURCE_IDS.has(source.id)) return { label: 'Blocked', className: 'is-blocked', rank: 2 };
   if (source.tier === 'core') return { label: 'Watch', className: 'is-watch', rank: 1 };
   return { label: 'Reference', className: 'is-reference', rank: 3 };
+}
+
+function sourceCoverageSummary(source = {}) {
+  if (LIVE_SOURCE_IDS.has(source.id)) {
+    return 'Official activity feed is live in the board.';
+  }
+
+  const marketCount =
+    source.city && source.city !== 'Statewide'
+      ? allMarkets.filter((item) => item.source_city === source.city && item.source_state === source.state).length
+      : 0;
+
+  if (marketCount) {
+    return `Market inventory is live for ${source.city} (${marketCount} bars).`;
+  }
+
+  if (BLOCKED_SOURCE_IDS.has(source.id)) {
+    return 'Manual watch only right now because the source is blocking automation.';
+  }
+
+  if (source.tier === 'core') {
+    return 'Tracked as an official watchlist source, but not yet ingesting live items.';
+  }
+
+  return 'Reference source only.';
 }
 
 function isAllLicenseSource(source = {}) {
@@ -278,6 +366,25 @@ function recordBrief(lead) {
   return formatContactLine(
     [lead.hearing_date ? formatDate(lead.hearing_date) : '', lead.status ? labelStatus(lead.status) : ''],
     'Record date'
+  );
+}
+
+function leadWhyNow(lead) {
+  return (
+    firstSentence(lead.hearing_purpose_summary || '') ||
+    firstSentence(lead.inclusion_summary || '') ||
+    'Open the record for the clearest hearing detail.'
+  );
+}
+
+function leadNextMove(lead) {
+  if (lead.contact_phone || lead.contact_email) return 'Use the license contact first.';
+  if (lead.enriched_contact_phone || lead.enriched_contact_email) return 'Use the enriched web contact first.';
+  if (lead.property_radar_owner_phone || lead.property_radar_owner_email) return 'Try the PropertyRadar owner path next.';
+  return (
+    firstSentence(lead.distributor_next_step || '') ||
+    firstSentence(lead.property_radar_next_step || '') ||
+    'Open the official record and decide the next path.'
   );
 }
 
@@ -420,6 +527,7 @@ function renderWarnings(meta) {
 }
 
 function renderSummary(leads) {
+  const marketPool = allMarkets.filter(matchesMarketFilters);
   const cards = [
     {
       label: 'Live now',
@@ -427,7 +535,7 @@ function renderSummary(leads) {
     },
     {
       label: 'Bars in trouble',
-      value: leads.filter(isBarInTrouble).length,
+      value: distinctEntityCount([...leads, ...marketPool], isBarInTrouble),
       filterKey: 'bars_in_trouble'
     },
     {
@@ -440,11 +548,14 @@ function renderSummary(leads) {
     },
     {
       label: 'PR matches',
-      value: propertyRadarMatchCount(allLeads)
+      value: propertyRadarMatchCount([...leads, ...marketPool])
     },
     {
       label: 'Property pressure',
-      value: leads.filter((lead) => lead.property_radar_property_pressure_label === 'High').length
+      value: distinctEntityCount(
+        [...leads, ...marketPool],
+        (record) => record.property_radar_property_pressure_label === 'High'
+      )
     },
     {
       label: 'Menu changed',
@@ -537,6 +648,8 @@ function buildLeadCardNode(lead) {
   node.querySelector('.sales-fit-top').textContent = labelScore(lead);
   node.querySelector('.property-pressure-top').textContent = propertyPressureTopLine(lead);
   node.querySelector('.area-pressure-top').textContent = areaPressureTopLine(lead);
+  node.querySelector('.lead-preview-why').textContent = leadWhyNow(lead);
+  node.querySelector('.lead-preview-next').textContent = leadNextMove(lead);
   node.querySelector('.record-brief').textContent = recordBrief(lead);
   node.querySelector('.people-brief').textContent = peopleBrief(lead);
   node.querySelector('.distributor-brief').textContent = distributorBrief(lead);
@@ -655,7 +768,7 @@ function renderLeadSection(targetEl, leads, { eyebrow, title, copy, empty } = {}
 }
 
 function renderCallList(leads) {
-  const ranked = rankLeads(leads).slice(0, 4);
+  const ranked = rankLeads(leads).slice(0, 6);
 
   if (!ranked.length) {
     callListEl.innerHTML = '';
@@ -670,10 +783,10 @@ function renderCallList(leads) {
 }
 
 function renderJustMissedList(leads) {
-  const opportunityIds = new Set(rankLeads(leads).slice(0, 4).map((lead) => lead.id));
+  const opportunityIds = new Set(rankLeads(leads).slice(0, 6).map((lead) => lead.id));
   const ranked = rankLeads(
     leads.filter((lead) => !opportunityIds.has(lead.id) && isJustMissedLead(lead) && isMissedConnectionLead(lead))
-  ).slice(0, 4);
+  ).slice(0, 6);
 
   if (!ranked.length) {
     renderLeadSection(justMissedListEl, [], {
@@ -699,7 +812,7 @@ function renderRegionalWatchList(leads, activity) {
         !isFestivalOrTemporaryLead(lead) &&
         matchesFilters(lead)
     )
-  ).slice(0, 6);
+  ).slice(0, 8);
 
   if (!ranked.length) {
     regionalWatchListEl.innerHTML = '';
@@ -737,6 +850,11 @@ function renderFestivalList(activity) {
   });
 }
 
+function matchesMarketQuickFilter(item) {
+  if (activeQuickFilter === 'bars_in_trouble') return isBarInTrouble(item);
+  return true;
+}
+
 function matchesMarketFilters(item) {
   const city = cityFilterEl.value;
   const state = stateFilterEl.value;
@@ -756,7 +874,13 @@ function matchesMarketFilters(item) {
     item.primary_type,
     item.gap_label,
     item.gap_summary,
-    item.recent_public_activity_summary
+    item.recent_public_activity_summary,
+    item.property_radar_owner_name,
+    item.property_radar_owner_email,
+    item.property_radar_owner_phone,
+    item.property_radar_property_pressure_label,
+    item.property_radar_property_pressure_summary,
+    item.property_radar_area_pressure_summary
   ]
     .join(' ')
     .toLowerCase()
@@ -768,6 +892,9 @@ function buildMarketCardNode(item) {
   node.querySelector('.market-city').textContent = item.source_city;
   node.querySelector('.market-type').textContent = item.primary_type || 'Bar';
   node.querySelector('.market-gap').textContent = item.gap_label || 'Market';
+  const propertyBadge = node.querySelector('.market-pr-badge');
+  propertyBadge.textContent = marketPropertyTopLine(item);
+  propertyBadge.classList.add(`source-status-badge`, marketPropertyBadgeClass(item));
   node.querySelector('.market-title').textContent = item.business_name || 'Unnamed bar';
   node.querySelector('.market-subtitle').textContent = item.address || 'No address captured';
   node.querySelector('.market-visible').textContent = item.oldest_visible_review_date
@@ -780,12 +907,15 @@ function buildMarketCardNode(item) {
     [item.business_status || '', item.open_now ? 'Open now' : 'Hours unknown', item.price_range || ''],
     'Status unknown'
   );
+  node.querySelector('.market-property').textContent = marketPropertyTopLine(item);
+  node.querySelector('.market-owner').textContent = marketPropertyOwnerLine(item);
   node.querySelector('.market-activity').textContent = item.recent_public_activity
     ? formatContactLine([item.recent_public_activity_date ? formatDate(item.recent_public_activity_date) : '', item.recent_public_activity_fit || ''], 'Recent public activity')
     : 'No recent public activity match';
   node.querySelector('.market-visible-summary').textContent =
     item.oldest_visible_review_summary || 'No dated review signal yet.';
   node.querySelector('.market-gap-summary').textContent = item.gap_summary || 'No gap summary yet.';
+  node.querySelector('.market-property-summary').textContent = marketPropertySummary(item);
   node.querySelector('.market-links').innerHTML = [
     linkHtml(item.google_maps_url, 'Google Maps'),
     linkHtml(item.website_url, 'Website')
@@ -796,7 +926,7 @@ function buildMarketCardNode(item) {
 }
 
 function renderMarketList(markets) {
-  const filtered = markets.filter(matchesMarketFilters);
+  const filtered = markets.filter((item) => matchesMarketFilters(item) && matchesMarketQuickFilter(item));
 
   if (!filtered.length) {
     marketListEl.innerHTML = '';
@@ -804,6 +934,8 @@ function renderMarketList(markets) {
   }
 
   marketListEl.innerHTML = '';
+  const prChecked = filtered.filter((item) => item.property_radar_status && item.property_radar_status !== 'not_checked').length;
+  const prMatched = filtered.filter((item) => item.property_radar_status === 'matched').length;
   const head = document.createElement('div');
   head.className = 'call-list-head';
   head.innerHTML = `
@@ -811,7 +943,7 @@ function renderMarketList(markets) {
       <p class="eyebrow">Area Inventory</p>
       <h2 class="section-title">Bars In Area</h2>
     </div>
-    <p class="section-copy">Separate market coverage from Apify Google Maps. Showing ${filtered.length} bars so you can see who is already out there, how visible they are, and where recent public activity overlaps.</p>
+    <p class="section-copy">Separate market coverage from Apify Google Maps. Showing ${filtered.length} bars, with PropertyRadar checked on ${prChecked} daily-sample bars and ${prMatched} parcel matches in the current view.</p>
   `;
   marketListEl.appendChild(head);
 
@@ -945,6 +1077,10 @@ function renderSourceSchedule(sources) {
                 <p>${escapeHtml(status.label)}</p>
               </div>
               <div>
+                <span class="meta-kicker">Connected Data</span>
+                <p>${escapeHtml(sourceCoverageSummary(source))}</p>
+              </div>
+              <div>
                 <span class="meta-kicker">Check Back</span>
                 <p>${escapeHtml(source.cadence || 'As needed')}</p>
               </div>
@@ -985,7 +1121,7 @@ function renderLeads() {
   renderMarketList(allMarkets);
   leadCountEl.textContent = String(leads.length);
   marketCountMetaEl.textContent = String(allMarkets.filter(matchesMarketFilters).length);
-  propertyMatchMetaEl.textContent = String(propertyRadarMatchCount(allLeads));
+  propertyMatchMetaEl.textContent = String(propertyRadarMatchCount([...allLeads, ...allMarkets]));
   leadGridEl.innerHTML = '';
   leadGridEl.hidden = true;
 
@@ -1016,7 +1152,7 @@ async function loadDashboard() {
   generatedAtEl.textContent = meta?.generated_at ? new Date(meta.generated_at).toLocaleString() : 'Not refreshed yet';
   leadCountEl.textContent = String(allLeads.length);
   marketCountMetaEl.textContent = String(allMarkets.length);
-  propertyMatchMetaEl.textContent = String(propertyRadarMatchCount(allLeads));
+  propertyMatchMetaEl.textContent = String(propertyRadarMatchCount([...allLeads, ...allMarkets]));
   renderWarnings(meta);
   renderAllLicenseLinks(allSources);
   renderSourceSchedule(allSources);
