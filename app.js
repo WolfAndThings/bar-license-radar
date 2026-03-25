@@ -273,27 +273,25 @@ function labelStatus(status = '') {
 }
 
 function leadStageLabel(lead) {
-  if (isUpcomingLead(lead)) return 'Coming up';
-  if (lead.status === 'pending_hearing' || lead.status === 'license_hearing') return 'In hearing';
-  if (isWithinLastDays(lead, 21)) return 'Fresh record';
-  if (lead.sales_fit === 'Existing venue / amendment') return 'Existing venue';
-  if (lead.sales_fit === 'Weak signal / generic code') return 'Weak signal';
-  return titleCase(lead.status || 'Watch');
+  return lead.opening_stage_label || titleCase(lead.status || 'Watch');
 }
 
 function labelScore(lead) {
-  const score = Number(lead.sales_likelihood_score ?? 0);
-  const label = lead.sales_likelihood_label || 'Unknown';
+  const score = Number(lead.outreach_score ?? lead.sales_likelihood_score ?? 0);
+  const label = lead.outreach_bucket || lead.sales_likelihood_label || 'Unknown';
   return `${label} ${score}/100`;
 }
 
 function marketRating(item) {
-  const rating = item.rating ? `${item.rating}` : 'No rating';
-  const count = Number(item.review_count || 0);
-  return count ? `${rating} • ${count} reviews` : rating;
+  const score = Number(item.outreach_score ?? 0);
+  const label = item.outreach_bucket || 'Watch';
+  return `${label} ${score}/100`;
 }
 
 function bestContactLine(lead) {
+  if (lead.decision_maker_line && lead.decision_maker_line !== 'No named decision maker yet') {
+    return lead.decision_maker_line;
+  }
   return formatContactLine(
     [
       preferredContactName(lead),
@@ -306,6 +304,9 @@ function bestContactLine(lead) {
 }
 
 function barContactLine(lead) {
+  if (lead.decision_maker_line && lead.decision_maker_line !== 'No named decision maker yet') {
+    return lead.decision_maker_line;
+  }
   return formatContactLine(
     [
       lead.contact_name || lead.enriched_contact_name,
@@ -390,6 +391,7 @@ function propertyMatchLine(lead) {
 
 function peopleBrief(lead) {
   const bits = [];
+  if (lead.decision_maker_name || lead.decision_maker_phone || lead.decision_maker_email) bits.push('Best path');
   if (lead.contact_name || lead.contact_phone || lead.contact_email) bits.push('License');
   if (lead.enriched_contact_name || lead.enriched_contact_phone || lead.enriched_contact_email) bits.push('Web');
   if (lead.property_radar_owner_name || lead.property_radar_owner_phone || lead.property_radar_owner_email) bits.push('Owner');
@@ -402,6 +404,8 @@ function recordBrief(lead) {
 
 function leadWhyNow(lead) {
   return (
+    firstSentence(lead.outreach_summary || '') ||
+    firstSentence(lead.opening_stage_summary || '') ||
     firstSentence(lead.hearing_purpose_summary || '') ||
     firstSentence(lead.inclusion_summary || '') ||
     'Open the record for the clearest hearing detail.'
@@ -409,6 +413,9 @@ function leadWhyNow(lead) {
 }
 
 function leadNextMove(lead) {
+  if (lead.decision_maker_phone || lead.decision_maker_email) {
+    return `Start with the ${lead.decision_maker_source_label || 'best contact'} path.`;
+  }
   if (lead.contact_phone || lead.contact_email) return 'Use the license contact first.';
   if (lead.enriched_contact_phone || lead.enriched_contact_email) return 'Use the enriched web contact first.';
   if (lead.property_radar_owner_phone || lead.property_radar_owner_email) return 'Try the building-owner contact next.';
@@ -421,13 +428,64 @@ function leadNextMove(lead) {
 
 function distributorBrief(lead) {
   return formatContactLine(
-    [lead.distributor_confidence_label || 'Unknown', lead.menu_change_label || '', lead.wholesaler_risk_label || ''],
+    [
+      lead.distributor_confidence_label || 'Unknown',
+      lead.menu_change_label || '',
+      lead.underserved_program_label ? `Program ${lead.underserved_program_label}` : '',
+      lead.wholesaler_risk_label || ''
+    ],
     'Distributor read'
   );
 }
 
 function propertyBrief(lead) {
   return `${propertyPressureTopLine(lead)} | ${areaPressureTopLine(lead)}`;
+}
+
+function accountBrief(lead) {
+  return formatContactLine(
+    [
+      lead.account_type_label || '',
+      lead.estimated_account_size_label || '',
+      lead.operating_signal_label || '',
+      lead.chain_status_label || ''
+    ],
+    'Account read'
+  );
+}
+
+function stageTopLine(lead) {
+  return formatContactLine(
+    [lead.opening_stage_label || '', lead.account_type_label || ''],
+    lead.sales_fit || 'Stage'
+  );
+}
+
+function actionTopLine(record) {
+  const label = record.outreach_bucket || 'Watch';
+  const score = Number(record.outreach_score ?? record.sales_likelihood_score ?? 0);
+  return `${label} ${score}/100`;
+}
+
+function marketBestPathLine(item) {
+  return formatContactLine(
+    [item.phone, item.website_url, item.property_radar_owner_phone, item.property_radar_owner_email],
+    'No direct path captured yet'
+  );
+}
+
+function marketAccountReadLine(item) {
+  return formatContactLine(
+    [item.opening_stage_label, item.account_type_label, item.estimated_account_size_label],
+    'Account read pending'
+  );
+}
+
+function marketOperatingLine(item) {
+  return formatContactLine(
+    [item.operating_signal_label, item.open_now ? 'Open now' : '', item.business_status || ''],
+    'Operating signal pending'
+  );
 }
 
 function normalizeCompare(input = '') {
@@ -474,16 +532,23 @@ function emphasizeHtml(input = '', phrases = []) {
 function summaryCallouts(lead) {
   return [
     lead.business_name,
+    lead.decision_maker_name,
     lead.contact_name,
     lead.enriched_contact_name,
     lead.property_radar_owner_name,
     lead.distributor_name,
+    lead.account_type_label,
+    lead.opening_stage_label,
+    lead.estimated_account_size_label,
+    lead.outreach_bucket,
     lead.sales_fit,
     lead.sales_likelihood_label,
     lead.property_radar_property_pressure_label,
     lead.property_radar_area_pressure_label,
     lead.menu_change_label,
     lead.wholesaler_risk_label,
+    lead.underserved_program_label,
+    lead.chain_status_label,
     'direct public contact',
     'named contact',
     'ownership',
@@ -561,12 +626,12 @@ function renderSummary(leads) {
   const cards = [
     {
       label: 'Coming up',
-      value: leads.filter((lead) => !isFestivalOrTemporaryLead(lead) && isUpcomingLead(lead)).length,
+      value: leads.filter((lead) => !isFestivalOrTemporaryLead(lead) && lead.opening_stage_label === 'Opening soon').length,
       targetId: 'callList'
     },
     {
-      label: 'Fresh leads',
-      value: leads.filter((lead) => !isFestivalOrTemporaryLead(lead) && isWithinLastDays(lead, 30)).length,
+      label: 'Just opened',
+      value: leads.filter((lead) => !isFestivalOrTemporaryLead(lead) && lead.opening_stage_label === 'Just opened').length,
       targetId: 'callList'
     },
     {
@@ -580,8 +645,8 @@ function renderSummary(leads) {
       targetId: 'establishedList'
     },
     {
-      label: 'Direct phone/email',
-      value: leads.filter((lead) => hasAnyDirectContact(lead)).length,
+      label: 'Call now',
+      value: distinctEntityCount([...leads, ...marketPool], (record) => record.outreach_bucket === 'Call now'),
       targetId: 'callList'
     },
     {
@@ -607,36 +672,13 @@ function renderSummary(leads) {
 }
 
 function callPriority(lead) {
-  let priority = Number(lead.sales_likelihood_score ?? 0);
-
-  if (isUpcomingLead(lead)) priority += 28;
-  else if (lead.status === 'pending_hearing') priority += 24;
-  else if (lead.status === 'license_hearing' || lead.status === 'public_recorded') priority += 16;
-  else if (lead.status === 'heard') priority += 6;
-
-  if (preferredContactName(lead)) {
-    priority += lead.contact_name ? 14 : 8;
-  }
-
-  if (hasOfficialDirectContact(lead)) priority += 22;
-  else if (hasEnrichedDirectContact(lead)) priority += 10;
-
-  if (lead.distributor_signal_type === 'exact') priority += 4;
-  else if (lead.distributor_signal_type === 'brand_inferred') priority += 2;
-
-  if (lead.property_radar_property_pressure_label === 'High') priority += 8;
-  else if (lead.property_radar_property_pressure_label === 'Medium') priority += 4;
-
-  if (lead.property_radar_area_pressure_label === 'High') priority += 4;
-  else if (lead.property_radar_area_pressure_label === 'Medium') priority += 2;
-
-  if (lead.sales_fit === 'Ownership / operator change') priority += 10;
-  if (lead.sales_fit === 'New issuance' || lead.sales_fit === 'New / timely') priority += 10;
-  if (lead.sales_fit === 'Existing venue / amendment') priority -= 18;
-  if (lead.sales_fit === 'Weak signal / generic code') priority -= 28;
-  if (lead.sales_fit === 'Temporary / event permit' || isTemporaryPermitLead(lead)) priority -= 40;
-  if (lead.sales_fit === 'Temporary / consumption-only' || isConsumptionOnlyLead(lead)) priority -= 48;
-
+  let priority = Number(lead.outreach_score ?? lead.sales_likelihood_score ?? 0);
+  if (lead.outreach_bucket === 'Call now') priority += 18;
+  else if (lead.outreach_bucket === 'Watch closely') priority += 8;
+  if (lead.opening_stage_label === 'Opening soon') priority += 16;
+  else if (lead.opening_stage_label === 'Just opened') priority += 10;
+  if (lead.decision_maker_phone || lead.decision_maker_email) priority += 10;
+  if (lead.ownership_change_signal_label === 'Strong') priority += 8;
   return priority;
 }
 
@@ -650,28 +692,17 @@ function rankLeads(leads) {
 }
 
 function distressedPriority(item) {
-  let score = 0;
-  if (item.property_radar_property_pressure_label === 'High') score += 60;
-  else if (item.property_radar_property_pressure_label === 'Medium') score += 35;
-  if (item.property_radar_is_listed_for_sale) score += 40;
-  if (item.property_radar_is_underwater) score += 32;
-  if (item.property_radar_in_foreclosure) score += 36;
-  if (item.property_radar_in_tax_delinquency) score += 24;
-  if (item.property_radar_in_bankruptcy) score += 24;
-  if (item.property_radar_is_bank_owned) score += 24;
-  if (item.property_radar_owner_name) score += 10;
-  if (hasMarketContact(item)) score += 8;
-  if (item.recent_public_activity) score += 6;
+  let score = Number(item.outreach_score ?? 0);
+  if (item.property_radar_property_pressure_label === 'High') score += 24;
+  if (item.property_radar_is_underwater || item.property_radar_in_tax_delinquency || item.property_radar_is_listed_for_sale) score += 18;
   return score;
 }
 
 function establishedPriority(item) {
   const ageDays = marketAgeDays(item) || 0;
-  let score = ageDays / 365;
-  score += Math.min(Number(item.review_count || 0), 600) / 30;
-  if (item.phone) score += 4;
-  if (item.website_url) score += 3;
-  if (item.property_radar_status === 'matched') score += 2;
+  let score = Number(item.outreach_score ?? 0);
+  score += ageDays / 365;
+  score += Math.min(Number(item.review_count || 0), 600) / 40;
   return score;
 }
 
@@ -690,17 +721,21 @@ function buildLeadCardNode(lead) {
   node.querySelector('.score-badge').textContent = labelScore(lead);
   node.querySelector('.lead-title').textContent = lead.business_name || 'Unnamed business';
   node.querySelector('.lead-subtitle').textContent = lead.address || lead.official_title || 'No address found yet';
-  node.querySelector('.best-contact').textContent = barContactLine(lead);
-  node.querySelector('.sales-fit-top').textContent = labelScore(lead);
-  node.querySelector('.property-pressure-top').textContent = propertyPressureTopLine(lead);
-  node.querySelector('.area-pressure-top').textContent = areaPressureTopLine(lead);
+  node.querySelector('.best-contact').textContent = bestContactLine(lead);
+  node.querySelector('.sales-fit-top').textContent = stageTopLine(lead);
+  node.querySelector('.property-pressure-top').textContent = formatContactLine(
+    [lead.estimated_account_size_label || '', lead.account_type_label || ''],
+    'Account size pending'
+  );
+  node.querySelector('.area-pressure-top').textContent = actionTopLine(lead);
   node.querySelector('.lead-preview-why').textContent = leadWhyNow(lead);
   node.querySelector('.lead-preview-next').textContent = leadNextMove(lead);
   node.querySelector('.record-brief').textContent = recordBrief(lead);
   node.querySelector('.people-brief').textContent = peopleBrief(lead);
+  node.querySelector('.account-brief').textContent = accountBrief(lead);
   node.querySelector('.distributor-brief').textContent = distributorBrief(lead);
   node.querySelector('.property-brief').textContent = propertyBrief(lead);
-  node.querySelector('.outreach-brief').textContent = 'Suggested note ready';
+  node.querySelector('.outreach-brief').textContent = actionTopLine(lead);
   node.querySelector('.applicant').textContent = lead.applicant_entity || 'Unavailable';
   const licenseEl = node.querySelector('.license');
   const licenseBlockEl = licenseEl.closest('div');
@@ -715,11 +750,43 @@ function buildLeadCardNode(lead) {
     [lead.contact_name, lead.contact_role, lead.contact_email, lead.contact_phone],
     'No official contact signal captured yet'
   );
+  node.querySelector('.decision-maker').textContent = lead.decision_maker_line || 'No named decision maker yet';
   node.querySelector('.contact-enriched').textContent = formatContactLine(
     [lead.enriched_contact_name, lead.enriched_contact_role, lead.enriched_contact_email, lead.enriched_contact_phone],
     'No enriched contact captured yet'
   );
   node.querySelector('.contact-owner').textContent = propertyOwnerLine(lead);
+  node.querySelector('.account-stage').textContent = formatContactLine(
+    [lead.opening_stage_label || '', lead.opening_stage_summary || ''],
+    'No opening-stage read yet'
+  );
+  node.querySelector('.account-type').textContent = formatContactLine(
+    [lead.account_type_label || '', lead.account_type_summary || ''],
+    'No account-type read yet'
+  );
+  node.querySelector('.account-size').textContent = formatContactLine(
+    [
+      lead.estimated_account_size_label ? `${lead.estimated_account_size_label} ${lead.estimated_account_size_score || ''}/100`.trim() : '',
+      lead.estimated_account_size_summary || ''
+    ],
+    'No size read yet'
+  );
+  node.querySelector('.operating-signal').textContent = formatContactLine(
+    [lead.operating_signal_label || '', lead.operating_signal_summary || ''],
+    'No operating read yet'
+  );
+  node.querySelector('.chain-read').textContent = formatContactLine(
+    [lead.chain_status_label || '', lead.chain_status_summary || ''],
+    'No chain read yet'
+  );
+  node.querySelector('.action-read').textContent = formatContactLine(
+    [actionTopLine(lead), lead.outreach_score_line || lead.outreach_summary || ''],
+    'No action score yet'
+  );
+  node.querySelector('.ownership-summary').textContent = lead.ownership_change_summary || 'No ownership-change read yet.';
+  node.querySelector('.hiring-summary').textContent = lead.hiring_signal_summary || 'No hiring read yet.';
+  node.querySelector('.competition-summary').textContent = lead.area_competition_summary || 'No competition read yet.';
+  node.querySelector('.portfolio-summary').textContent = lead.owner_portfolio_summary || 'No owner-footprint read yet.';
   node.querySelector('.property-match').textContent = propertyMatchLine(lead);
   node.querySelector('.property-listing').textContent = propertyListingLine(lead);
   node.querySelector('.property-balance').textContent = propertyBalanceLine(lead);
@@ -745,6 +812,14 @@ function buildLeadCardNode(lead) {
     `${lead.distributor_confidence_label || 'Unknown'}${lead.distributor_name ? ` | ${lead.distributor_name}` : ''}. ${
       lead.distributor_summary || 'No distributor signal generated yet.'
     }`,
+    summaryCallouts(lead)
+  );
+  node.querySelector('.brand-mix-summary').innerHTML = emphasizeHtml(
+    lead.brand_mix_summary || 'No readable brand mix was captured yet.',
+    summaryCallouts(lead)
+  );
+  node.querySelector('.program-summary').innerHTML = emphasizeHtml(
+    `${lead.underserved_program_label || 'Unknown'}. ${lead.underserved_program_summary || 'No program-opportunity read yet.'}`,
     summaryCallouts(lead)
   );
   node.querySelector('.distributor-next-step').textContent =
@@ -984,8 +1059,15 @@ function matchesMarketFilters(item) {
     item.phone,
     item.website_url,
     item.primary_type,
+    item.account_type_label,
+    item.opening_stage_label,
+    item.estimated_account_size_label,
+    item.outreach_bucket,
     item.gap_label,
     item.gap_summary,
+    item.underserved_program_summary,
+    item.area_competition_summary,
+    item.owner_portfolio_summary,
     item.recent_public_activity_summary,
     item.property_radar_owner_name,
     item.property_radar_owner_email,
@@ -1002,10 +1084,10 @@ function matchesMarketFilters(item) {
 function buildMarketCardNode(item) {
   const node = marketCardTemplate.content.cloneNode(true);
   node.querySelector('.market-city').textContent = item.source_city;
-  node.querySelector('.market-type').textContent = item.primary_type || 'Bar';
-  node.querySelector('.market-gap').textContent = item.gap_label || 'Market';
+  node.querySelector('.market-type').textContent = item.account_type_label || item.primary_type || 'Bar';
+  node.querySelector('.market-gap').textContent = item.opening_stage_label || item.gap_label || 'Market';
   const propertyBadge = node.querySelector('.market-pr-badge');
-  propertyBadge.textContent = marketPropertyTopLine(item);
+  propertyBadge.textContent = actionTopLine(item);
   propertyBadge.classList.add(`source-status-badge`, marketPropertyBadgeClass(item));
   node.querySelector('.market-title').textContent = item.business_name || 'Unnamed bar';
   node.querySelector('.market-subtitle').textContent = item.address || 'No address captured';
@@ -1013,21 +1095,23 @@ function buildMarketCardNode(item) {
     ? formatDate(item.oldest_visible_review_date)
     : 'Unknown';
   node.querySelector('.market-rating').textContent = marketRating(item);
-  node.querySelector('.market-phone').textContent = item.phone || 'No phone captured';
-  node.querySelector('.market-website').textContent = item.website_url || 'No website captured';
-  node.querySelector('.market-status').textContent = formatContactLine(
-    [item.business_status || '', item.open_now ? 'Open now' : 'Hours unknown', item.price_range || ''],
-    'Status unknown'
-  );
+  node.querySelector('.market-phone').textContent = marketBestPathLine(item);
+  node.querySelector('.market-website').textContent = marketAccountReadLine(item);
+  node.querySelector('.market-status').textContent = marketOperatingLine(item);
   node.querySelector('.market-property').textContent = marketPropertyTopLine(item);
-  node.querySelector('.market-owner').textContent = marketPropertyOwnerLine(item);
+  node.querySelector('.market-owner').textContent = formatContactLine(
+    [item.decision_maker_line, item.property_radar_owner_name ? `Owner ${item.property_radar_owner_name}` : ''],
+    marketPropertyOwnerLine(item)
+  );
   node.querySelector('.market-activity').textContent = item.recent_public_activity
     ? formatContactLine([item.recent_public_activity_date ? formatDate(item.recent_public_activity_date) : '', item.recent_public_activity_fit || ''], 'Recent public activity')
     : 'No recent public activity match';
   node.querySelector('.market-visible-summary').textContent = item.oldest_visible_review_date
     ? `Earliest public operating signal in this sample: ${formatDate(item.oldest_visible_review_date)}.`
     : 'No dated public operating signal was captured yet.';
-  node.querySelector('.market-gap-summary').textContent = item.gap_summary || 'No gap summary yet.';
+  node.querySelector('.market-gap-summary').textContent = `${item.underserved_program_label || 'Unknown'}. ${item.underserved_program_summary || 'No program read yet.'}`;
+  node.querySelector('.market-competition-summary').textContent = item.area_competition_summary || 'No competition read yet.';
+  node.querySelector('.market-portfolio-summary').textContent = item.owner_portfolio_summary || 'No owner-footprint read yet.';
   node.querySelector('.market-property-summary').textContent = marketPropertySummary(item);
   node.querySelector('.market-links').innerHTML = [
     linkHtml(item.google_maps_url, 'Google Maps'),
@@ -1082,6 +1166,10 @@ function matchesBaseFilters(lead) {
   const haystack = [
     lead.business_name,
     lead.applicant_entity,
+    lead.decision_maker_name,
+    lead.decision_maker_role,
+    lead.decision_maker_email,
+    lead.decision_maker_phone,
     lead.contact_name,
     lead.contact_role,
     lead.contact_email,
@@ -1095,11 +1183,28 @@ function matchesBaseFilters(lead) {
     lead.official_summary,
     lead.hearing_purpose_summary,
     lead.inclusion_summary,
+    lead.opening_stage_label,
+    lead.opening_stage_summary,
+    lead.account_type_label,
+    lead.account_type_summary,
+    lead.estimated_account_size_label,
+    lead.estimated_account_size_summary,
+    lead.operating_signal_label,
+    lead.operating_signal_summary,
+    lead.outreach_bucket,
+    lead.outreach_summary,
     lead.sales_likelihood_summary,
     lead.sales_fit,
     lead.distributor_name,
     lead.distributor_summary,
     lead.distributor_next_step,
+    lead.brand_mix_summary,
+    lead.underserved_program_summary,
+    lead.chain_status_summary,
+    lead.ownership_change_summary,
+    lead.hiring_signal_summary,
+    lead.area_competition_summary,
+    lead.owner_portfolio_summary,
     lead.property_radar_owner_name,
     lead.property_radar_owner_email,
     lead.property_radar_owner_phone,
