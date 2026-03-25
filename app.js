@@ -13,6 +13,7 @@ const summaryGridEl = document.getElementById('summaryGrid');
 const callListEl = document.getElementById('callList');
 const justMissedListEl = document.getElementById('justMissedList');
 const regionalWatchListEl = document.getElementById('regionalWatchList');
+const festivalListEl = document.getElementById('festivalList');
 const leadGridEl = document.getElementById('leadGrid');
 const leadCardTemplate = document.getElementById('leadCardTemplate');
 
@@ -54,6 +55,15 @@ function isBarInTrouble(lead) {
     lead.property_radar_in_tax_delinquency ||
     lead.property_radar_in_bankruptcy ||
     lead.property_radar_is_bank_owned
+  );
+}
+
+function isFestivalOrTemporaryLead(lead) {
+  return (
+    lead.sales_fit === 'Temporary / event permit' ||
+    lead.sales_fit === 'Temporary / consumption-only' ||
+    isTemporaryPermitLead(lead) ||
+    isConsumptionOnlyLead(lead)
   );
 }
 
@@ -625,6 +635,21 @@ function renderRegionalWatchList(leads, activity) {
   });
 }
 
+function renderFestivalList(activity) {
+  const ranked = rankLeads(activity.filter((lead) => matchesFilters(lead) && isFestivalOrTemporaryLead(lead))).slice(0, 8);
+
+  if (!ranked.length) {
+    festivalListEl.innerHTML = '';
+    return;
+  }
+
+  renderLeadSection(festivalListEl, ranked, {
+    eyebrow: 'Short-Term',
+    title: 'Festivals + Temporary Licenses',
+    copy: 'Event permits and one-day alcohol activity, kept separate from the main board.'
+  });
+}
+
 function matchesBaseFilters(lead) {
   const city = cityFilterEl.value;
   const state = stateFilterEl.value;
@@ -776,6 +801,7 @@ function renderLeads() {
   renderCallList(leads);
   renderJustMissedList(leads);
   renderRegionalWatchList(leads, allActivity);
+  renderFestivalList(allActivity);
   leadCountEl.textContent = String(leads.length);
   leadGridEl.innerHTML = '';
   leadGridEl.hidden = true;
