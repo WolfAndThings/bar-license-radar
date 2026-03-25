@@ -2,6 +2,7 @@ const generatedAtEl = document.getElementById('generatedAt');
 const leadCountEl = document.getElementById('leadCount');
 const searchInputEl = document.getElementById('searchInput');
 const cityFilterEl = document.getElementById('cityFilter');
+const stateFilterEl = document.getElementById('stateFilter');
 const statusFilterEl = document.getElementById('statusFilter');
 const warningsEl = document.getElementById('warnings');
 const allLicensesLinksEl = document.getElementById('allLicensesLinks');
@@ -11,11 +12,14 @@ const sourcePanelBodyEl = document.getElementById('sourcePanelBody');
 const summaryGridEl = document.getElementById('summaryGrid');
 const callListEl = document.getElementById('callList');
 const justMissedListEl = document.getElementById('justMissedList');
+const regionalWatchListEl = document.getElementById('regionalWatchList');
 const leadGridEl = document.getElementById('leadGrid');
 const leadCardTemplate = document.getElementById('leadCardTemplate');
 
 let allLeads = [];
+let allActivity = [];
 let allSources = [];
+let activeQuickFilter = 'all';
 
 function preferredContactName(lead) {
   return lead.contact_name || lead.enriched_contact_name || '';
@@ -39,6 +43,18 @@ function hasDistributorSignal(lead) {
 
 function hasMenuChangeSignal(lead) {
   return ['stable', 'moderate_change', 'major_change'].includes(lead.menu_change_signal);
+}
+
+function isBarInTrouble(lead) {
+  return (
+    lead.property_radar_property_pressure_label === 'High' ||
+    lead.property_radar_is_listed_for_sale ||
+    lead.property_radar_is_underwater ||
+    lead.property_radar_in_foreclosure ||
+    lead.property_radar_in_tax_delinquency ||
+    lead.property_radar_in_bankruptcy ||
+    lead.property_radar_is_bank_owned
+  );
 }
 
 function formatContactLine(parts, fallback) {
@@ -216,6 +232,11 @@ function propertyBrief(lead) {
   return `${propertyPressureTopLine(lead)} | ${areaPressureTopLine(lead)}`;
 }
 
+function matchesQuickFilter(lead) {
+  if (activeQuickFilter === 'bars_in_trouble') return isBarInTrouble(lead);
+  return true;
+}
+
 function emphasizeHtml(input = '', phrases = []) {
   let html = escapeHtml(input);
   const uniquePhrases = [...new Set(phrases.map((value) => String(value || '').trim()).filter(Boolean))]
@@ -322,6 +343,11 @@ function renderSummary(leads) {
       value: leads.filter((lead) => ['pending_hearing', 'license_hearing'].includes(lead.status)).length
     },
     {
+      label: 'Bars in trouble',
+      value: leads.filter(isBarInTrouble).length,
+      filterKey: 'bars_in_trouble'
+    },
+    {
       label: 'Named contacts',
       value: leads.filter((lead) => preferredContactName(lead)).length
     },
@@ -350,7 +376,10 @@ function renderSummary(leads) {
   summaryGridEl.innerHTML = cards
     .map(
       (card) => `
-        <article class="summary-card">
+        <article
+          class="summary-card${card.filterKey ? ' is-actionable' : ''}${activeQuickFilter === card.filterKey ? ' is-active' : ''}"
+          ${card.filterKey ? `data-filter-key="${escapeHtml(card.filterKey)}"` : ''}
+        >
           <span>${escapeHtml(card.label)}</span>
           <strong>${card.value}</strong>
         </article>
@@ -567,12 +596,43 @@ function renderJustMissedList(leads) {
   });
 }
 
-function matchesFilters(lead) {
+function renderRegionalWatchList(leads, activity) {
+  const opportunityIds = new Set(leads.map((lead) => lead.id));
+  const ranked = rankLeads(
+    activity.filter(
+      (lead) => ['ND', 'SD'].includes(lead.source_state) && !opportunityIds.has(lead.id) && matchesFilters(lead)
+    )
+  ).slice(0, 6);
+
+  if (!ranked.length) {
+    regionalWatchListEl.innerHTML = '';
+    return;
+  }
+
+  const state = stateFilterEl.value;
+  const title =
+    state === 'ND'
+      ? 'North Dakota Watchlist'
+      : state === 'SD'
+        ? 'South Dakota Watchlist'
+        : 'Dakota Watchlist';
+
+  renderLeadSection(regionalWatchListEl, ranked, {
+    eyebrow: 'Watchlist',
+    title,
+    copy: 'North and South Dakota activity that is not on the main board yet.',
+    empty: ''
+  });
+}
+
+function matchesBaseFilters(lead) {
   const city = cityFilterEl.value;
+  const state = stateFilterEl.value;
   const status = statusFilterEl.value;
   const search = searchInputEl.value.trim().toLowerCase();
 
   if (city !== 'all' && lead.source_city !== city) return false;
+  if (state !== 'all' && lead.source_state !== state) return false;
   if (status !== 'all' && lead.status !== status) return false;
   if (!search) return true;
 
@@ -613,6 +673,10 @@ function matchesFilters(lead) {
     .toLowerCase();
 
   return haystack.includes(search);
+}
+
+function matchesFilters(lead) {
+  return matchesBaseFilters(lead) && matchesQuickFilter(lead);
 }
 
 function linkHtml(href, label) {
@@ -705,10 +769,13 @@ function updateSourceToggle() {
 }
 
 function renderLeads() {
-  const leads = allLeads.filter(matchesFilters);
-  renderSummary(leads);
+  const summaryPool = (allActivity.length ? allActivity : allLeads).filter(matchesBaseFilters);
+  const baseLeads = allLeads.filter(matchesBaseFilters);
+  const leads = baseLeads.filter(matchesQuickFilter);
+  renderSummary(summaryPool);
   renderCallList(leads);
   renderJustMissedList(leads);
+  renderRegionalWatchList(leads, allActivity);
   leadCountEl.textContent = String(leads.length);
   leadGridEl.innerHTML = '';
   leadGridEl.hidden = true;
@@ -720,16 +787,19 @@ function renderLeads() {
 }
 
 async function loadDashboard() {
-  const [metaResponse, leadsResponse, sourcesResponse] = await Promise.all([
+  const [metaResponse, leadsResponse, activityResponse, sourcesResponse] = await Promise.all([
     fetch('./data/meta.json'),
     fetch('./data/leads.json'),
+    fetch('./data/activity.json'),
     fetch('./data/sources.json')
   ]);
   const meta = await metaResponse.json();
   const leads = await leadsResponse.json();
+  const activity = await activityResponse.json();
   const sources = await sourcesResponse.json();
 
   allLeads = Array.isArray(leads) ? leads : [];
+  allActivity = Array.isArray(activity) ? activity : [];
   allSources = Array.isArray(sources) ? sources : [];
   generatedAtEl.textContent = meta?.generated_at ? new Date(meta.generated_at).toLocaleString() : 'Not refreshed yet';
   leadCountEl.textContent = String(allLeads.length);
@@ -737,7 +807,8 @@ async function loadDashboard() {
   renderAllLicenseLinks(allSources);
   renderSourceSchedule(allSources);
 
-  const cities = [...new Set(allLeads.map((lead) => lead.source_city).filter(Boolean))];
+  const cityPool = [...allLeads, ...allActivity];
+  const cities = [...new Set(cityPool.map((lead) => lead.source_city).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   for (const city of cities) {
     const option = document.createElement('option');
     option.value = city;
@@ -745,15 +816,35 @@ async function loadDashboard() {
     cityFilterEl.appendChild(option);
   }
 
+  const statePool = [
+    ...cityPool.map((lead) => lead.source_state),
+    ...allSources.map((source) => source.state)
+  ].filter((value) => value && value !== 'Statewide');
+  const states = [...new Set(statePool)].sort((a, b) => a.localeCompare(b));
+  for (const state of states) {
+    const option = document.createElement('option');
+    option.value = state;
+    option.textContent = state;
+    stateFilterEl.appendChild(option);
+  }
+
   renderLeads();
 }
 
 searchInputEl.addEventListener('input', renderLeads);
 cityFilterEl.addEventListener('change', renderLeads);
+stateFilterEl.addEventListener('change', renderLeads);
 statusFilterEl.addEventListener('change', renderLeads);
 sourceToggleEl.addEventListener('click', () => {
   sourcePanelBodyEl.hidden = !sourcePanelBodyEl.hidden;
   updateSourceToggle();
+});
+summaryGridEl.addEventListener('click', (event) => {
+  const card = event.target.closest('[data-filter-key]');
+  if (!card) return;
+  const key = card.getAttribute('data-filter-key') || 'all';
+  activeQuickFilter = activeQuickFilter === key ? 'all' : key;
+  renderLeads();
 });
 
 updateSourceToggle();

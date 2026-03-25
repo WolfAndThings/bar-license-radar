@@ -29,7 +29,7 @@
             <strong id="generatedAt">Loading...</strong>
           </div>
           <div class="meta-row">
-            <span class="meta-label">Lead count</span>
+            <span class="meta-label">Main board</span>
             <strong id="leadCount">0</strong>
           </div>
           <div class="meta-row">
@@ -51,6 +51,12 @@
           </select>
         </label>
         <label>
+          <span>State</span>
+          <select id="stateFilter">
+            <option value="all">All states</option>
+          </select>
+        </label>
+        <label>
           <span>Status</span>
           <select id="statusFilter">
             <option value="all">All statuses</option>
@@ -67,6 +73,7 @@
       <section id="summaryGrid" class="summary-grid"></section>
       <section id="callList" class="call-list"></section>
       <section id="justMissedList" class="call-list"></section>
+      <section id="regionalWatchList" class="call-list"></section>
       <section id="leadGrid" class="lead-grid" hidden></section>
 
       <section class="source-panel">

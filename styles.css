@@ -231,11 +231,11 @@ h1 {
   flex: 0 0 auto;
   justify-self: start;
   min-height: 2.7rem;
-  padding: 0.55rem 0.95rem;
+  padding: 0.52rem 0.88rem;
   border: 1px solid rgba(13, 92, 122, 0.14);
-  border-radius: 999px;
-  background: var(--panel-strong);
-  color: var(--accent);
+  border-radius: 14px;
+  background: #edf5fb;
+  color: #0f4f6b;
   cursor: pointer;
   font-weight: 700;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
@@ -270,11 +270,11 @@ h1 {
   display: inline-flex;
   align-items: center;
   min-height: 2.5rem;
-  padding: 0.55rem 0.92rem;
+  padding: 0.5rem 0.84rem;
   border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--panel-strong);
-  color: var(--ink);
+  border-radius: 14px;
+  background: #f1f6ff;
+  color: #1e4f93;
   text-decoration: none;
   font-weight: 600;
   box-shadow: none;
@@ -433,7 +433,7 @@ select:focus {
 }
 
 .warning-chip {
-  border-radius: 999px;
+  border-radius: 14px;
   padding: 0.7rem 1rem;
   color: #8a4b09;
   background: #fff8ef;
@@ -524,6 +524,21 @@ select:focus {
   background: #ffffff;
 }
 
+.summary-card.is-actionable {
+  cursor: pointer;
+}
+
+.summary-card.is-actionable:hover {
+  border-color: rgba(31, 79, 147, 0.18);
+  box-shadow: 0 12px 24px rgba(16, 35, 58, 0.08);
+  transform: translateY(-1px);
+}
+
+.summary-card.is-active {
+  border-color: rgba(31, 79, 147, 0.28);
+  background: #eef5ff;
+}
+
 .summary-card span {
   display: block;
   color: var(--muted);
@@ -572,26 +587,33 @@ select:focus {
 .score-badge {
   display: inline-flex;
   align-items: center;
-  min-height: 2.1rem;
-  border-radius: 999px;
-  padding: 0.36rem 0.76rem;
-  border: 1px solid rgba(13, 92, 122, 0.12);
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-size: 0.82rem;
-  font-weight: 600;
+  width: fit-content;
+  max-width: 100%;
+  flex: 0 0 auto;
+  min-height: 1.85rem;
+  border-radius: 12px;
+  padding: 0.28rem 0.62rem;
+  border: 1px solid transparent;
+  font-size: 0.79rem;
+  font-weight: 700;
 }
 
 .status-badge {
-  color: var(--muted-strong);
-  background: rgba(23, 38, 58, 0.04);
-  border-color: rgba(23, 38, 58, 0.08);
+  color: #4e6075;
+  background: #eef2f7;
+  border-color: #d8e0ea;
 }
 
 .score-badge {
-  background: rgba(15, 118, 110, 0.08);
-  border-color: rgba(15, 118, 110, 0.12);
-  color: var(--accent-2);
+  background: #e7f8ef;
+  border-color: #c6e7d5;
+  color: #166b53;
+}
+
+.city-badge {
+  background: #eaf2ff;
+  border-color: #cddcff;
+  color: #1f4f93;
 }
 
 .lead-title {
@@ -676,16 +698,47 @@ select:focus {
 .lane-summary-chip {
   display: inline-flex;
   align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  flex: 0 0 auto;
+  margin-left: auto;
   min-height: 1.9rem;
-  max-width: min(100%, 24rem);
-  padding: 0.24rem 0.68rem;
-  border-radius: 999px;
-  border: 1px solid rgba(13, 92, 122, 0.12);
-  background: rgba(13, 92, 122, 0.06);
-  color: var(--muted-strong);
+  padding: 0.24rem 0.62rem;
+  border-radius: 12px;
+  border: 1px solid transparent;
   font-size: 0.79rem;
   font-weight: 600;
   text-align: right;
+}
+
+.record-brief {
+  background: #ebf3ff;
+  border-color: #cadcfb;
+  color: #1f4f93;
+}
+
+.people-brief {
+  background: #edf8f0;
+  border-color: #cde5d5;
+  color: #1d6a4f;
+}
+
+.distributor-brief {
+  background: #fff5e9;
+  border-color: #f0d8b4;
+  color: #9a5a12;
+}
+
+.property-brief {
+  background: #fdf0f5;
+  border-color: #f0cade;
+  color: #9b3e6b;
+}
+
+.outreach-brief {
+  background: #f1edff;
+  border-color: #d9d0fb;
+  color: #5e45aa;
 }
 
 .lane-body {
@@ -731,11 +784,11 @@ select:focus {
   white-space: nowrap;
   flex: 0 0 auto;
   min-height: 2.3rem;
-  padding: 0.54rem 0.9rem;
+  padding: 0.5rem 0.82rem;
   border: 1px solid rgba(13, 92, 122, 0.16);
-  background: var(--accent-soft);
-  color: var(--accent);
-  border-radius: 999px;
+  background: #edf5fb;
+  color: #0f4f6b;
+  border-radius: 14px;
   cursor: pointer;
   font-weight: 600;
 }
@@ -771,11 +824,11 @@ select:focus {
   display: inline-flex;
   align-items: center;
   min-height: 2.2rem;
-  padding: 0.45rem 0.76rem;
-  border-radius: 999px;
-  border: 1px solid rgba(15, 118, 110, 0.14);
-  background: rgba(15, 143, 103, 0.08);
-  color: var(--ok);
+  padding: 0.42rem 0.72rem;
+  border-radius: 14px;
+  border: 1px solid #cfe2f3;
+  background: #eff6ff;
+  color: #1f4f93;
   font-weight: 600;
   text-decoration: none;
 }
