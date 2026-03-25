@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-24T21:59:52.629Z",
+  "generated_at": "2026-03-25T00:59:14.372Z",
   "lead_count": 3,
   "cities": [
     "Minneapolis",
@@ -17,6 +17,12 @@
     "auth_failed_sources": [
       "shell-env"
     ]
+  },
+  "propertyRadar": {
+    "configured": false,
+    "selected_env": "",
+    "matched_count": 0,
+    "last_error": ""
   },
   "warnings": [
     "Minnesota AGE Public Data Access is the preferred statewide approved-license source, but the portal is currently blocking headless automation. This build is currently automating Minneapolis, St. Paul, Fargo, and Sioux Falls public records instead.",

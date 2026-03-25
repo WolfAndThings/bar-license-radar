@@ -37,6 +37,7 @@ jobs:
       - name: Refresh Data
         env:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+          PROPERTYRADAR_TOKEN: ${{ secrets.PROPERTYRADAR_TOKEN }}
         run: npm run refresh
 
       - name: Upload Pages Artifact

@@ -121,6 +121,101 @@ function bestContactLine(lead) {
   );
 }
 
+function barContactLine(lead) {
+  return formatContactLine(
+    [
+      lead.contact_name || lead.enriched_contact_name,
+      lead.contact_role || lead.enriched_contact_role,
+      lead.contact_phone || lead.enriched_contact_phone,
+      lead.contact_email || lead.enriched_contact_email
+    ],
+    'No bar contact yet'
+  );
+}
+
+function propertyOwnerLine(lead) {
+  return formatContactLine(
+    [
+      lead.property_radar_owner_name,
+      lead.property_radar_owner_role,
+      lead.property_radar_owner_phone,
+      lead.property_radar_owner_email
+    ],
+    'No building-owner signal yet'
+  );
+}
+
+function propertyPressureTopLine(lead) {
+  if (lead.property_radar_status === 'not_configured') return 'Not loaded';
+  if (!['matched', 'error'].includes(lead.property_radar_status) && lead.property_radar_status) return 'No match yet';
+  const bits = [lead.property_radar_property_pressure_label || 'Unknown'];
+  if (lead.property_radar_is_listed_for_sale) bits.push('Listed');
+  else if (lead.property_radar_is_underwater) bits.push('Underwater');
+  else if (lead.property_radar_in_foreclosure) bits.push('Foreclosure');
+  return bits.join(' | ');
+}
+
+function areaPressureTopLine(lead) {
+  if (lead.property_radar_status === 'not_configured') return 'Not loaded';
+  if (!['matched', 'error'].includes(lead.property_radar_status) && lead.property_radar_status) return 'No match yet';
+  const bits = [lead.property_radar_area_pressure_label || 'Unknown'];
+  if (Number(lead.property_radar_area_for_sale_count || 0) > 0) {
+    bits.push(`${lead.property_radar_area_for_sale_count} nearby`);
+  }
+  return bits.join(' | ');
+}
+
+function propertyListingLine(lead) {
+  return formatContactLine(
+    [
+      lead.property_radar_listing_status || '',
+      lead.property_radar_listing_type || '',
+      lead.property_radar_listing_price || '',
+      lead.property_radar_listing_date ? `Listed ${formatDate(lead.property_radar_listing_date)}` : '',
+      lead.property_radar_days_on_market ? `${lead.property_radar_days_on_market} DOM` : ''
+    ],
+    'No active property listing signal'
+  );
+}
+
+function propertyBalanceLine(lead) {
+  return formatContactLine(
+    [
+      lead.property_radar_available_equity ? `Equity ${lead.property_radar_available_equity}` : '',
+      lead.property_radar_total_loan_balance ? `Loan ${lead.property_radar_total_loan_balance}` : '',
+      lead.property_radar_equity_percent ? `Eq ${lead.property_radar_equity_percent}` : '',
+      lead.property_radar_distress_score !== '' ? `Distress ${lead.property_radar_distress_score}` : ''
+    ],
+    'No debt or equity read yet'
+  );
+}
+
+function peopleBrief(lead) {
+  const bits = [];
+  if (lead.contact_name || lead.contact_phone || lead.contact_email) bits.push('License');
+  if (lead.enriched_contact_name || lead.enriched_contact_phone || lead.enriched_contact_email) bits.push('Web');
+  if (lead.property_radar_owner_name || lead.property_radar_owner_phone || lead.property_radar_owner_email) bits.push('Owner');
+  return bits.join(' + ') || 'No contacts';
+}
+
+function recordBrief(lead) {
+  return formatContactLine(
+    [lead.license_type, lead.hearing_date ? formatDate(lead.hearing_date) : '', lead.status ? labelStatus(lead.status) : ''],
+    'Record details'
+  );
+}
+
+function distributorBrief(lead) {
+  return formatContactLine(
+    [lead.distributor_confidence_label || 'Unknown', lead.menu_change_label || '', lead.wholesaler_risk_label || ''],
+    'Distributor read'
+  );
+}
+
+function propertyBrief(lead) {
+  return `${propertyPressureTopLine(lead)} | ${areaPressureTopLine(lead)}`;
+}
+
 function emphasizeHtml(input = '', phrases = []) {
   let html = escapeHtml(input);
   const uniquePhrases = [...new Set(phrases.map((value) => String(value || '').trim()).filter(Boolean))]
@@ -140,9 +235,12 @@ function summaryCallouts(lead) {
     lead.business_name,
     lead.contact_name,
     lead.enriched_contact_name,
+    lead.property_radar_owner_name,
     lead.distributor_name,
     lead.sales_fit,
     lead.sales_likelihood_label,
+    lead.property_radar_property_pressure_label,
+    lead.property_radar_area_pressure_label,
     lead.menu_change_label,
     lead.wholesaler_risk_label,
     'direct public contact',
@@ -236,8 +334,8 @@ function renderSummary(leads) {
       value: leads.filter((lead) => !lead.website_url && !hasAnyDirectContact(lead)).length
     },
     {
-      label: 'Distributor mapped',
-      value: leads.filter((lead) => hasDistributorSignal(lead)).length
+      label: 'Property pressure',
+      value: leads.filter((lead) => lead.property_radar_property_pressure_label === 'High').length
     },
     {
       label: 'Menu changed',
@@ -279,6 +377,12 @@ function callPriority(lead) {
   if (lead.distributor_signal_type === 'exact') priority += 4;
   else if (lead.distributor_signal_type === 'brand_inferred') priority += 2;
 
+  if (lead.property_radar_property_pressure_label === 'High') priority += 8;
+  else if (lead.property_radar_property_pressure_label === 'Medium') priority += 4;
+
+  if (lead.property_radar_area_pressure_label === 'High') priority += 4;
+  else if (lead.property_radar_area_pressure_label === 'Medium') priority += 2;
+
   if (lead.sales_fit === 'Ownership / operator change') priority += 10;
   if (lead.sales_fit === 'New issuance' || lead.sales_fit === 'New / timely') priority += 10;
   if (lead.sales_fit === 'Existing venue / amendment') priority -= 18;
@@ -313,6 +417,15 @@ function buildLeadCardNode(lead) {
   node.querySelector('.score-badge').textContent = labelScore(lead);
   node.querySelector('.lead-title').textContent = lead.business_name || 'Unnamed business';
   node.querySelector('.lead-subtitle').textContent = lead.address || lead.official_title || 'No address found yet';
+  node.querySelector('.best-contact').textContent = barContactLine(lead);
+  node.querySelector('.sales-fit-top').textContent = labelScore(lead);
+  node.querySelector('.property-pressure-top').textContent = propertyPressureTopLine(lead);
+  node.querySelector('.area-pressure-top').textContent = areaPressureTopLine(lead);
+  node.querySelector('.record-brief').textContent = recordBrief(lead);
+  node.querySelector('.people-brief').textContent = peopleBrief(lead);
+  node.querySelector('.distributor-brief').textContent = distributorBrief(lead);
+  node.querySelector('.property-brief').textContent = propertyBrief(lead);
+  node.querySelector('.outreach-brief').textContent = 'Suggested note ready';
   node.querySelector('.applicant').textContent = lead.applicant_entity || 'Unavailable';
   node.querySelector('.license').textContent = lead.license_type || 'Unavailable';
   node.querySelector('.dates').textContent = `Hearing: ${formatDate(lead.hearing_date)}\nFirst public record: ${formatDate(
@@ -326,6 +439,9 @@ function buildLeadCardNode(lead) {
     [lead.enriched_contact_name, lead.enriched_contact_role, lead.enriched_contact_email, lead.enriched_contact_phone],
     'No enriched contact captured yet'
   );
+  node.querySelector('.contact-owner').textContent = propertyOwnerLine(lead);
+  node.querySelector('.property-listing').textContent = propertyListingLine(lead);
+  node.querySelector('.property-balance').textContent = propertyBalanceLine(lead);
 
   const signals =
     lead.public_signals?.website_summary ||
@@ -362,6 +478,16 @@ function buildLeadCardNode(lead) {
     }`,
     summaryCallouts(lead)
   );
+  node.querySelector('.property-pressure-summary').innerHTML = emphasizeHtml(
+    lead.property_radar_property_pressure_summary || 'No PropertyRadar property pressure signal yet.',
+    summaryCallouts(lead)
+  );
+  node.querySelector('.property-area-summary').innerHTML = emphasizeHtml(
+    lead.property_radar_area_pressure_summary || 'No nearby sale activity signal yet.',
+    summaryCallouts(lead)
+  );
+  node.querySelector('.property-next-step').textContent =
+    lead.property_radar_next_step || 'No PropertyRadar next step yet.';
 
   node.querySelector('.followup-subject').textContent = lead.suggested_follow_up_subject || '';
   node.querySelector('.followup-body').textContent = lead.suggested_follow_up_body || '';
@@ -471,6 +597,14 @@ function matchesFilters(lead) {
     lead.distributor_name,
     lead.distributor_summary,
     lead.distributor_next_step,
+    lead.property_radar_owner_name,
+    lead.property_radar_owner_email,
+    lead.property_radar_owner_phone,
+    lead.property_radar_listing_status,
+    lead.property_radar_listing_type,
+    lead.property_radar_property_pressure_summary,
+    lead.property_radar_area_pressure_summary,
+    lead.property_radar_next_step,
     lead.menu_change_summary,
     lead.wholesaler_risk_summary,
     ...(Array.isArray(lead.menu_brands) ? lead.menu_brands : [])
