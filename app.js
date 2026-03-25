@@ -289,121 +289,156 @@ function callPriority(lead) {
   return priority;
 }
 
-function renderCallList(leads) {
-  const ranked = [...leads]
+function rankLeads(leads) {
+  return [...leads]
     .sort((a, b) => {
       const priorityDelta = callPriority(b) - callPriority(a);
       if (priorityDelta !== 0) return priorityDelta;
       return (b.hearing_date || '').localeCompare(a.hearing_date || '');
-    })
-    .slice(0, 4);
+    });
+}
+
+function isMissedConnectionLead(lead) {
+  if (isUpcomingLead(lead)) return false;
+  const date = new Date(recordDate(lead));
+  if (Number.isNaN(date.getTime())) return false;
+  const ageDays = (Date.now() - date.getTime()) / (24 * 60 * 60 * 1000);
+  return ageDays >= 30 && ageDays <= 60;
+}
+
+function buildLeadCardNode(lead) {
+  const node = leadCardTemplate.content.cloneNode(true);
+  node.querySelector('.city-badge').textContent = lead.source_city;
+  node.querySelector('.status-badge').textContent = labelStatus(lead.status);
+  node.querySelector('.score-badge').textContent = labelScore(lead);
+  node.querySelector('.lead-title').textContent = lead.business_name || 'Unnamed business';
+  node.querySelector('.lead-subtitle').textContent = lead.address || lead.official_title || 'No address found yet';
+  node.querySelector('.applicant').textContent = lead.applicant_entity || 'Unavailable';
+  node.querySelector('.license').textContent = lead.license_type || 'Unavailable';
+  node.querySelector('.dates').textContent = `Hearing: ${formatDate(lead.hearing_date)}\nFirst public record: ${formatDate(
+    lead.first_public_record_date
+  )}`;
+  node.querySelector('.contact-official').textContent = formatContactLine(
+    [lead.contact_name, lead.contact_role, lead.contact_email, lead.contact_phone],
+    'No official contact signal captured yet'
+  );
+  node.querySelector('.contact-enriched').textContent = formatContactLine(
+    [lead.enriched_contact_name, lead.enriched_contact_role, lead.enriched_contact_email, lead.enriched_contact_phone],
+    'No enriched contact captured yet'
+  );
+
+  const signals =
+    lead.public_signals?.website_summary ||
+    lead.official_summary ||
+    'No additional public concept signal captured yet.';
+  node.querySelector('.signals').textContent = signals;
+  node.querySelector('.hearing-summary').innerHTML = emphasizeHtml(
+    lead.hearing_purpose_summary || 'No hearing-purpose summary generated yet.',
+    summaryCallouts(lead)
+  );
+  node.querySelector('.inclusion-summary').innerHTML = emphasizeHtml(
+    lead.inclusion_summary || 'No inclusion summary generated yet.',
+    summaryCallouts(lead)
+  );
+  node.querySelector('.sales-summary').innerHTML = emphasizeHtml(
+    `${lead.sales_fit ? `${lead.sales_fit}. ` : ''}${lead.sales_likelihood_summary || 'No sale-likelihood summary generated yet.'}`,
+    summaryCallouts(lead)
+  );
+  node.querySelector('.distributor-summary').innerHTML = emphasizeHtml(
+    `${lead.distributor_confidence_label || 'Unknown'}${lead.distributor_name ? ` | ${lead.distributor_name}` : ''}. ${
+      lead.distributor_summary || 'No distributor signal generated yet.'
+    }`,
+    summaryCallouts(lead)
+  );
+  node.querySelector('.distributor-next-step').textContent =
+    lead.distributor_next_step || 'No next-step guidance generated yet.';
+  node.querySelector('.menu-summary').innerHTML = emphasizeHtml(
+    `${lead.menu_change_label || 'Unknown'}. ${lead.menu_change_summary || 'No menu-comparison summary generated yet.'}`,
+    summaryCallouts(lead)
+  );
+  node.querySelector('.wholesaler-risk-summary').innerHTML = emphasizeHtml(
+    `${lead.wholesaler_risk_label || 'Unknown'}. ${
+      lead.wholesaler_risk_summary || 'No wholesaler-risk summary generated yet.'
+    }`,
+    summaryCallouts(lead)
+  );
+
+  node.querySelector('.followup-subject').textContent = lead.suggested_follow_up_subject || '';
+  node.querySelector('.followup-body').textContent = lead.suggested_follow_up_body || '';
+  node.querySelector('.copy-btn').addEventListener('click', async () => {
+    const payload = `${lead.suggested_follow_up_subject}\n\n${lead.suggested_follow_up_body}`;
+    await navigator.clipboard.writeText(payload);
+  });
+
+  const links = [
+    linkHtml(lead.official_record_url, 'Official record'),
+    linkHtml(lead.official_meeting_url, 'Meeting'),
+    linkHtml(lead.website_url, 'Website')
+  ].filter(Boolean);
+  node.querySelector('.link-row').innerHTML = links.join('');
+  return node;
+}
+
+function renderLeadSection(targetEl, leads, { eyebrow, title, copy, empty } = {}) {
+  targetEl.innerHTML = '';
+
+  if (!leads.length) {
+    if (empty) targetEl.innerHTML = `<p class="empty-state">${escapeHtml(empty)}</p>`;
+    return;
+  }
+
+  const head = document.createElement('div');
+  head.className = 'call-list-head';
+  head.innerHTML = `
+    <div>
+      <p class="eyebrow">${escapeHtml(eyebrow || '')}</p>
+      <h2 class="section-title">${escapeHtml(title || '')}</h2>
+    </div>
+    <p class="section-copy">${escapeHtml(copy || '')}</p>
+  `;
+  targetEl.appendChild(head);
+
+  const grid = document.createElement('div');
+  grid.className = 'lead-grid';
+  for (const lead of leads) {
+    grid.appendChild(buildLeadCardNode(lead));
+  }
+  targetEl.appendChild(grid);
+}
+
+function renderCallList(leads) {
+  const ranked = rankLeads(leads).slice(0, 4);
 
   if (!ranked.length) {
     callListEl.innerHTML = '';
     return;
   }
 
-  callListEl.innerHTML = `
-    <div class="call-list-head">
-      <div>
-        <p class="eyebrow">Call First</p>
-        <h2 class="section-title">Opportunities</h2>
-      </div>
-      <p class="section-copy">
-        Ranked by timing, sales fit, and whether there is a real person or direct line to contact.
-      </p>
-    </div>
-    <div class="call-list-grid">
-      ${ranked
-        .map(
-          (lead) => `
-            <article class="call-card">
-              <div class="badge-row">
-                <span class="city-badge">${escapeHtml(lead.source_city)}</span>
-                <span class="status-badge">${escapeHtml(labelStatus(lead.status))}</span>
-                <span class="score-badge">${escapeHtml(labelScore(lead))}</span>
-              </div>
-              <h3 class="call-card-title">${escapeHtml(lead.business_name || 'Unnamed business')}</h3>
-              <p class="call-card-subtitle">${escapeHtml(lead.address || 'No address found yet')}</p>
-              <div class="call-card-meta">
-                <div>
-                  <span class="meta-kicker">Call</span>
-                  <p>${escapeHtml(bestContactLine(lead))}</p>
-                </div>
-                <div>
-                  <span class="meta-kicker">Why now</span>
-                  <p>${escapeHtml(lead.sales_fit || lead.sales_likelihood_label || 'Active lead')}</p>
-                </div>
-              </div>
-              <p class="call-card-summary">${emphasizeHtml(
-                lead.sales_likelihood_summary || lead.inclusion_summary || '',
-                summaryCallouts(lead)
-              )}</p>
-            </article>
-          `
-        )
-        .join('')}
-    </div>
-  `;
+  renderLeadSection(callListEl, ranked, {
+    eyebrow: 'Call First',
+    title: 'Opportunities',
+    copy: 'Best leads right now, with all of the important detail in one place.'
+  });
 }
 
 function renderJustMissedList(leads) {
-  const ranked = [...leads]
-    .filter((lead) => isJustMissedLead(lead))
-    .sort((a, b) => {
-      const priorityDelta = callPriority(b) - callPriority(a);
-      if (priorityDelta !== 0) return priorityDelta;
-      return recordDate(b).localeCompare(recordDate(a));
-    })
-    .slice(0, 4);
+  const opportunityIds = new Set(rankLeads(leads).slice(0, 4).map((lead) => lead.id));
+  const ranked = rankLeads(
+    leads.filter((lead) => !opportunityIds.has(lead.id) && isJustMissedLead(lead) && isMissedConnectionLead(lead))
+  ).slice(0, 4);
 
   if (!ranked.length) {
-    justMissedListEl.innerHTML = '';
+    renderLeadSection(justMissedListEl, [], {
+      empty: 'No missed connections in the 1-2 month window right now.'
+    });
     return;
   }
 
-  justMissedListEl.innerHTML = `
-    <div class="call-list-head">
-      <div>
-        <p class="eyebrow">Last 6 Months</p>
-        <h2 class="section-title">Possible Connections</h2>
-      </div>
-      <p class="section-copy">
-        Accounts from the last 180 days that are no longer brand-new but may still be changing distributors, menus, or operators.
-      </p>
-    </div>
-    <div class="call-list-grid">
-      ${ranked
-        .map(
-          (lead) => `
-            <article class="call-card">
-              <div class="badge-row">
-                <span class="city-badge">${escapeHtml(lead.source_city)}</span>
-                <span class="status-badge">${escapeHtml(labelStatus(lead.status))}</span>
-                <span class="score-badge">${escapeHtml(labelScore(lead))}</span>
-              </div>
-              <h3 class="call-card-title">${escapeHtml(lead.business_name || 'Unnamed business')}</h3>
-              <p class="call-card-subtitle">${escapeHtml(lead.address || 'No address found yet')}</p>
-              <div class="call-card-meta">
-                <div>
-                  <span class="meta-kicker">Public record</span>
-                  <p>${escapeHtml(formatDate(recordDate(lead)))}</p>
-                </div>
-                <div>
-                  <span class="meta-kicker">Call</span>
-                  <p>${escapeHtml(bestContactLine(lead))}</p>
-                </div>
-              </div>
-              <p class="call-card-summary">${emphasizeHtml(
-                lead.sales_likelihood_summary || lead.inclusion_summary || '',
-                summaryCallouts(lead)
-              )}</p>
-            </article>
-          `
-        )
-        .join('')}
-    </div>
-  `;
+  renderLeadSection(justMissedListEl, ranked, {
+    eyebrow: '1-2 Months Old',
+    title: 'Missed Connections',
+    copy: 'Leads not already in Opportunities that first showed up about 1-2 months ago.'
+  });
 }
 
 function matchesFilters(lead) {
@@ -541,88 +576,13 @@ function renderLeads() {
   renderCallList(leads);
   renderJustMissedList(leads);
   leadCountEl.textContent = String(leads.length);
-
-  const fragment = document.createDocumentFragment();
-
-  for (const lead of leads) {
-    const node = leadCardTemplate.content.cloneNode(true);
-    node.querySelector('.city-badge').textContent = lead.source_city;
-    node.querySelector('.status-badge').textContent = labelStatus(lead.status);
-    node.querySelector('.score-badge').textContent = labelScore(lead);
-    node.querySelector('.lead-title').textContent = lead.business_name || 'Unnamed business';
-    node.querySelector('.lead-subtitle').textContent = lead.address || lead.official_title || 'No address found yet';
-    node.querySelector('.applicant').textContent = lead.applicant_entity || 'Unavailable';
-    node.querySelector('.license').textContent = lead.license_type || 'Unavailable';
-    node.querySelector('.dates').textContent = `Hearing: ${formatDate(lead.hearing_date)}\nFirst public record: ${formatDate(
-      lead.first_public_record_date
-    )}`;
-    node.querySelector('.contact-official').textContent = formatContactLine(
-      [lead.contact_name, lead.contact_role, lead.contact_email, lead.contact_phone],
-      'No official contact signal captured yet'
-    );
-    node.querySelector('.contact-enriched').textContent = formatContactLine(
-      [lead.enriched_contact_name, lead.enriched_contact_role, lead.enriched_contact_email, lead.enriched_contact_phone],
-      'No enriched contact captured yet'
-    );
-
-    const signals =
-      lead.public_signals?.website_summary ||
-      lead.official_summary ||
-      'No additional public concept signal captured yet.';
-    node.querySelector('.signals').textContent = signals;
-    node.querySelector('.hearing-summary').innerHTML = emphasizeHtml(
-      lead.hearing_purpose_summary || 'No hearing-purpose summary generated yet.',
-      summaryCallouts(lead)
-    );
-    node.querySelector('.inclusion-summary').innerHTML = emphasizeHtml(
-      lead.inclusion_summary || 'No inclusion summary generated yet.',
-      summaryCallouts(lead)
-    );
-    node.querySelector('.sales-summary').innerHTML = emphasizeHtml(
-      `${lead.sales_fit ? `${lead.sales_fit}. ` : ''}${lead.sales_likelihood_summary || 'No sale-likelihood summary generated yet.'}`,
-      summaryCallouts(lead)
-    );
-    node.querySelector('.distributor-summary').innerHTML = emphasizeHtml(
-      `${lead.distributor_confidence_label || 'Unknown'}${lead.distributor_name ? ` | ${lead.distributor_name}` : ''}. ${
-        lead.distributor_summary || 'No distributor signal generated yet.'
-      }`,
-      summaryCallouts(lead)
-    );
-    node.querySelector('.distributor-next-step').textContent =
-      lead.distributor_next_step || 'No next-step guidance generated yet.';
-    node.querySelector('.menu-summary').innerHTML = emphasizeHtml(
-      `${lead.menu_change_label || 'Unknown'}. ${lead.menu_change_summary || 'No menu-comparison summary generated yet.'}`,
-      summaryCallouts(lead)
-    );
-    node.querySelector('.wholesaler-risk-summary').innerHTML = emphasizeHtml(
-      `${lead.wholesaler_risk_label || 'Unknown'}. ${
-        lead.wholesaler_risk_summary || 'No wholesaler-risk summary generated yet.'
-      }`,
-      summaryCallouts(lead)
-    );
-
-    node.querySelector('.followup-subject').textContent = lead.suggested_follow_up_subject || '';
-    node.querySelector('.followup-body').textContent = lead.suggested_follow_up_body || '';
-    node.querySelector('.copy-btn').addEventListener('click', async () => {
-      const payload = `${lead.suggested_follow_up_subject}\n\n${lead.suggested_follow_up_body}`;
-      await navigator.clipboard.writeText(payload);
-    });
-
-    const links = [
-      linkHtml(lead.official_record_url, 'Official record'),
-      linkHtml(lead.official_meeting_url, 'Meeting'),
-      linkHtml(lead.website_url, 'Website')
-    ].filter(Boolean);
-    node.querySelector('.link-row').innerHTML = links.join('');
-    fragment.appendChild(node);
-  }
-
   leadGridEl.innerHTML = '';
+  leadGridEl.hidden = true;
+
   if (!leads.length) {
-    leadGridEl.innerHTML = '<p class="empty-state">No leads match the current filters.</p>';
-    return;
+    callListEl.innerHTML = '<p class="empty-state">No leads match the current filters.</p>';
+    justMissedListEl.innerHTML = '';
   }
-  leadGridEl.appendChild(fragment);
 }
 
 async function loadDashboard() {
