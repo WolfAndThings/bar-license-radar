@@ -113,14 +113,14 @@
     "ownership_change_summary": "No direct ownership-change language is visible in the current public record.",
     "hiring_signal_label": "None seen",
     "hiring_signal_summary": "No hiring signal was visible in the public text we captured.",
-    "area_bar_count": 58,
+    "area_bar_count": 57,
     "area_competition_label": "Dense",
     "area_competition_examples": [
       "Matt's Bar and Grill",
       "Brit's Pub",
       "French Meadow Cafe & Bluestem Bar"
     ],
-    "area_competition_summary": "Minneapolis currently has 58 tracked bars in the board. Visible peers include Matt's Bar and Grill, Brit's Pub, French Meadow Cafe & Bluestem Bar.",
+    "area_competition_summary": "Minneapolis currently has 57 tracked bars in the board. Visible peers include Matt's Bar and Grill, Brit's Pub, French Meadow Cafe & Bluestem Bar.",
     "owner_portfolio_count": 1,
     "owner_portfolio_summary": "No multi-location pattern is obvious from the current dataset.",
     "city_momentum_label": "Quiet",
@@ -141,7 +141,7 @@
     "outreach_portfolio_fit_score": 72,
     "outreach_score": 47,
     "outreach_bucket": "Long-shot",
-    "outreach_summary": "Watch / unclear | named contact: MARC FILISTER | 58 tracked bars in Minneapolis",
+    "outreach_summary": "Watch / unclear | named contact: MARC FILISTER | 57 tracked bars in Minneapolis",
     "outreach_score_line": "Reachability 92 | Revenue 26 | Switch 24 | Timing 22 | Fit 72"
   },
   {
@@ -227,7 +227,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "Sioux Falls applicant | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -238,8 +238,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -281,11 +281,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "siouxfalls-4216-the-social",
@@ -370,7 +370,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "The Social | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for The Social at 301 South Thompson Avenue tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for The Social at 301 South Thompson Avenue tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -381,8 +381,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -424,11 +424,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "siouxfalls-4216-the-old-courthouse-museum",
@@ -942,7 +942,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "Sioux Falls applicant | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -953,8 +953,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -996,11 +996,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "siouxfalls-4228-the-social",
@@ -1085,7 +1085,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "The Social | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for The Social at 301 South Thompson Avenue tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for The Social at 301 South Thompson Avenue tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -1096,8 +1096,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -1139,11 +1139,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "stpaul-dsiblliq-000561-2026",
@@ -1157,7 +1157,7 @@
     "contact_role": "co-owner",
     "contact_phone": "612-249-5228",
     "contact_email": "",
-    "website_url": "https://www.grovelandtap.com/",
+    "website_url": "https://www.grovelandtap.com/contact",
     "address": "1834 St Clair Ave",
     "license_type": "Adding a Gambling Location license and Upgrade to full Liquor On Sale and Liquor On Sale Sunday licenses from an existing Wine On Sale and Malt On Sale (Strong) license (which included Sunday service). The establishment will continue to have an existing Liquor Outdoor Service Area (Patio) license.",
     "license_id": "DSIBLLIQ-000561-2026",
@@ -1186,37 +1186,37 @@
       ],
       "top_results": [
         {
-          "query": "\"Groveland Tap\" \"St. Paul\" bar",
+          "query": "\"Groveland Tap\" \"St. Paul\" contact",
+          "title": "Contact — Groveland Tap",
+          "url": "https://www.grovelandtap.com/contact",
+          "description": "Groveland Tap ... 1834 St. Clair Ave. St. Paul, MN 55105. Follow Us. instagram · facebook.Read more"
+        },
+        {
+          "query": "\"Groveland Tap\" \"St. Paul\" contact",
           "title": "Groveland Tap",
           "url": "https://www.grovelandtap.com/",
+          "description": "Clair Ave. St. Paul, MN 55105. Phone. 651-699-5058. Hours. Monday - Thursday ... Groveland Tap. A Blue Plate Restaurant Company. Hours. Monday - Thursday 11am ...Read more"
+        },
+        {
+          "query": "\"Groveland Tap\" \"St. Paul\" contact",
+          "title": "Reservations",
+          "url": "https://www.grovelandtap.com/reservations",
           "description": "Groveland Tap ... 1834 St. Clair Ave. St. Paul, MN 55105. Follow Us. instagram · facebook.Read more"
         },
         {
-          "query": "\"Groveland Tap\" \"St. Paul\" bar",
-          "title": "Groveland Tap - Food and Drink",
-          "url": "https://www.grovelandtap.com/food-and-drink",
-          "description": "Groveland Tap ... 1834 St. Clair Ave. St. Paul, MN 55105. Follow Us. instagram · facebook.Read more"
-        },
-        {
-          "query": "\"Groveland Tap\" \"St. Paul\" bar",
-          "title": "GROVELAND TAP, Saint Paul - Menu, Prices & Restaurant ...",
-          "url": "https://www.tripadvisor.com/Restaurant_Review-g43501-d840989-Reviews-Groveland_Tap-Saint_Paul_Minnesota.html",
-          "description": "Great spot in St Paul ... Stopped by Groveland Tap with my husband for a date night. They had many private booths which was nice and quiet. Parking was tough ...Read more"
-        },
-        {
-          "query": "\"Groveland Tap\" \"St. Paul\" bar",
+          "query": "\"Groveland Tap\" \"St. Paul\" contact",
           "title": "GROVELAND TAP - Updated March 2026",
           "url": "https://www.yelp.com/biz/groveland-tap-st-paul-3",
-          "description": "GROVELAND TAP - Try Our New Menu - 1834 St Clair Ave, St. Paul, MN 55105, 276 Photos, (651) 699-5058, Mon - 11:00 am - 10:00 pm, Tue - 11:00 am - 10:00 pm, ..."
+          "description": "More info about Groveland Tap · Map · 1834 St Clair Ave. St. Paul, MN 55105 · (651) 699-5058. Call Now · Order Takeout or Delivery. Start Order · Full menu · Hours.Read more"
         },
         {
-          "query": "\"Groveland Tap\" \"St. Paul\" bar",
-          "title": "Events & Happenings",
-          "url": "https://www.grovelandtap.com/events-happenings",
-          "description": "Groveland Tap. A Blue Plate Restaurant Company. Hours. Monday - Thursday 11am - 10pm kitchen ... Clair Ave. St. Paul, MN 55105. Follow Us. instagram · facebook.Read more"
+          "query": "\"Groveland Tap\" \"St. Paul\" contact",
+          "title": "Groveland Tap",
+          "url": "https://www.exploreminnesota.com/profile/groveland-tap/9952",
+          "description": "Groveland Tap. Details. 1834 St Clair Ave St Paul, MN 55105 · (651) 699-5058 · Email · View Website · Get Directions · Map of Groveland Tap. About. A ...Read more"
         }
       ],
-      "website_summary": "Groveland Tap"
+      "website_summary": "Contact &mdash; Groveland Tap"
     },
     "enrichment_status": "ok",
     "property_radar_status": "matched",
@@ -1316,7 +1316,7 @@
       "There is at least one public website signal to follow up from."
     ],
     "suggested_follow_up_subject": "Groveland Tap | Adding a Gambling Location license and Upg",
-    "suggested_follow_up_body": "Hi Stephanie,\n\nI saw the public St. Paul record for Groveland Tap at 1834 St Clair Ave tied to Adding a Gambling Location license and Upgrade to full Liquor On Sale and Liquor On Sale Sunday licenses from an existing Wine On Sale and Malt On Sale (Strong) license (which included Sunday service). The establishment will continue to have an existing Liquor Outdoor Service Area (Patio) license.. The public-facing footprint suggests Groveland Tap.\n\nI help bars line up opening orders, patio-friendly SKU mixes, and supplier support without overbuying in month one.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi Stephanie,\n\nI saw the public St. Paul record for Groveland Tap at 1834 St Clair Ave tied to Adding a Gambling Location license and Upgrade to full Liquor On Sale and Liquor On Sale Sunday licenses from an existing Wine On Sale and Malt On Sale (Strong) license (which included Sunday service). The establishment will continue to have an existing Liquor Outdoor Service Area (Patio) license.. The public-facing footprint suggests Contact &mdash; Groveland Tap.\n\nI help bars line up opening orders, patio-friendly SKU mixes, and supplier support without overbuying in month one.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "opportunity",
     "linked_market_id": "market-st-paul-groveland-tap-chij2zkpniaq9ocrionusik2hjw",
     "market_business_status": "OPERATIONAL",
@@ -1345,14 +1345,14 @@
     "ownership_change_summary": "There are ownership-style words in the public text, but not enough to call it a clean transfer.",
     "hiring_signal_label": "None seen",
     "hiring_signal_summary": "No hiring signal was visible in the public text we captured.",
-    "area_bar_count": 58,
+    "area_bar_count": 57,
     "area_competition_label": "Dense",
     "area_competition_examples": [
       "The Nook",
       "Red Cow St. Paul",
       "The Gnome Craft Pub"
     ],
-    "area_competition_summary": "St. Paul currently has 58 tracked bars in the board. Visible peers include The Nook, Red Cow St. Paul, The Gnome Craft Pub.",
+    "area_competition_summary": "St. Paul currently has 57 tracked bars in the board. Visible peers include The Nook, Red Cow St. Paul, The Gnome Craft Pub.",
     "owner_portfolio_count": 2,
     "owner_portfolio_summary": "MACGROVE PROPERTIES LLC is tied to 2 tracked properties in the current dataset.",
     "city_momentum_label": "Quiet",
@@ -1373,7 +1373,7 @@
     "outreach_portfolio_fit_score": 72,
     "outreach_score": 74,
     "outreach_bucket": "Call now",
-    "outreach_summary": "Existing account changing | named contact: Stephanie Shimp | high property pressure | 58 tracked bars in St. Paul",
+    "outreach_summary": "Existing account changing | named contact: Stephanie Shimp | high property pressure | 57 tracked bars in St. Paul",
     "outreach_score_line": "Reachability 80 | Revenue 87 | Switch 72 | Timing 60 | Fit 72"
   },
   {
@@ -1459,7 +1459,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "Sioux Falls applicant | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -1470,8 +1470,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -1513,11 +1513,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "siouxfalls-4213-the-old-courthouse-museum",
@@ -1602,7 +1602,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "the Old Courthouse Museum | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for the Old Courthouse Museum at 200 West 6th Street tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for the Old Courthouse Museum at 200 West 6th Street tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -1613,8 +1613,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -1656,11 +1656,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "siouxfalls-4213-the-old-courthouse-museum",
@@ -1919,14 +1919,14 @@
     "ownership_change_summary": "No direct ownership-change language is visible in the current public record.",
     "hiring_signal_label": "None seen",
     "hiring_signal_summary": "No hiring signal was visible in the public text we captured.",
-    "area_bar_count": 58,
+    "area_bar_count": 57,
     "area_competition_label": "Dense",
     "area_competition_examples": [
       "Matt's Bar and Grill",
       "Brit's Pub",
       "French Meadow Cafe & Bluestem Bar"
     ],
-    "area_competition_summary": "Minneapolis currently has 58 tracked bars in the board. Visible peers include Matt's Bar and Grill, Brit's Pub, French Meadow Cafe & Bluestem Bar.",
+    "area_competition_summary": "Minneapolis currently has 57 tracked bars in the board. Visible peers include Matt's Bar and Grill, Brit's Pub, French Meadow Cafe & Bluestem Bar.",
     "owner_portfolio_count": 1,
     "owner_portfolio_summary": "No multi-location pattern is obvious from the current dataset.",
     "city_momentum_label": "Quiet",
@@ -1947,7 +1947,7 @@
     "outreach_portfolio_fit_score": 38,
     "outreach_score": 39,
     "outreach_bucket": "Long-shot",
-    "outreach_summary": "Watch / unclear | named contact: BRET J ANDERSEN | 58 tracked bars in Minneapolis",
+    "outreach_summary": "Watch / unclear | named contact: BRET J ANDERSEN | 57 tracked bars in Minneapolis",
     "outreach_score_line": "Reachability 92 | Revenue 20 | Switch 24 | Timing 22 | Fit 38"
   },
   {
@@ -2033,7 +2033,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "Sioux Falls applicant | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -2044,8 +2044,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -2087,11 +2087,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "siouxfalls-4210-the-old-courthouse-museum",
@@ -2176,7 +2176,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "the Old Courthouse Museum | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for the Old Courthouse Museum at 200 West 6th Street tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for the Old Courthouse Museum at 200 West 6th Street tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -2187,8 +2187,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -2230,11 +2230,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "siouxfalls-4208-first-tee-learning-center",
@@ -2462,7 +2462,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "Sioux Falls applicant | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -2473,8 +2473,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -2516,11 +2516,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "siouxfalls-4194-the-premiere-playhouse",
@@ -2605,7 +2605,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "the Premiere Playhouse | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for the Premiere Playhouse at 300 North Phillips Avenue tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for the Premiere Playhouse at 300 North Phillips Avenue tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -2616,8 +2616,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -2659,11 +2659,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "siouxfalls-4194-the-history-club",
@@ -3034,7 +3034,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "Sioux Falls applicant | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -3045,8 +3045,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -3088,11 +3088,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "siouxfalls-4193-the-premiere-playhouse",
@@ -3177,7 +3177,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "the Premiere Playhouse | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for the Premiere Playhouse at 300 North Phillips Avenue tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for the Premiere Playhouse at 300 North Phillips Avenue tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -3188,8 +3188,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -3231,11 +3231,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "siouxfalls-4193-special-one-day-liquor-license-for-sioux-falls-s",
@@ -3320,7 +3320,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "Sioux Falls applicant | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant at 316 South Phillips Avenue tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant at 316 South Phillips Avenue tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -3331,8 +3331,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -3374,11 +3374,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "siouxfalls-4191-the-social",
@@ -3463,7 +3463,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "The Social | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for The Social at 301 South Thompson Avenue tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for The Social at 301 South Thompson Avenue tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -3474,8 +3474,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -3517,11 +3517,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "siouxfalls-4182-special-one-day-liquor-license-for-t-slat-inc",
@@ -3606,7 +3606,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "Sioux Falls applicant | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -3617,8 +3617,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -3660,11 +3660,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "siouxfalls-4182-special-one-day-liquor-license-for-sioux-falls-s",
@@ -3749,7 +3749,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "Sioux Falls applicant | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant at 316 South Phillips Avenue tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant at 316 South Phillips Avenue tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -3760,8 +3760,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -3803,11 +3803,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "siouxfalls-4171-special-one-day-liquor-license-for-t-slat-inc",
@@ -3892,7 +3892,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "Sioux Falls applicant | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -3903,8 +3903,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -3946,11 +3946,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "siouxfalls-4171-the-social",
@@ -4035,7 +4035,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "The Social | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for The Social at 301 South Thompson Avenue tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for The Social at 301 South Thompson Avenue tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -4046,8 +4046,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -4089,11 +4089,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "siouxfalls-4171-the-multi-cultural-center",
@@ -4321,7 +4321,7 @@
       "This looks like a temporary or one-day permit rather than a durable retail account."
     ],
     "suggested_follow_up_subject": "Sioux Falls applicant | Special One-Day Liquor License",
-    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant tied to Special One-Day Liquor License. It reads like a event venue account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
+    "suggested_follow_up_body": "Hi there,\n\nI saw the public Sioux Falls record for Sioux Falls applicant tied to Special One-Day Liquor License. It reads like a neighborhood bar account, which helps frame the opening mix and support plan.\n\nI help new and expanding bars put together opening orders, supplier mixes, and feature plans that actually fit the concept and neighborhood.\n\nIf you are open to a fresh look at the current mix, I can send a short recommendation on where a supplier reset could add energy without disrupting the program.\n\nBest,\n[Your Name]",
     "board_bucket": "watchlist",
     "linked_market_id": "",
     "market_business_status": "",
@@ -4332,8 +4332,8 @@
     "market_open_now": false,
     "market_oldest_visible_review_date": "",
     "market_latest_visible_review_date": "",
-    "account_type_label": "Event venue",
-    "account_type_summary": "Reads like an event-led venue rather than a steady bar account.",
+    "account_type_label": "Neighborhood bar",
+    "account_type_summary": "Reads like a classic bar, tavern, lounge, pub, or bar-and-grill account.",
     "opening_stage_label": "Temporary",
     "opening_stage_summary": "This reads like an event-use record, not a steady bar or restaurant opening.",
     "estimated_account_size_score": 20,
@@ -4375,11 +4375,11 @@
     "outreach_revenue_potential_score": 20,
     "outreach_switch_likelihood_score": 24,
     "outreach_timing_score": 22,
-    "outreach_portfolio_fit_score": 18,
-    "outreach_score": 20,
+    "outreach_portfolio_fit_score": 84,
+    "outreach_score": 34,
     "outreach_bucket": "Skip",
     "outreach_summary": "Temporary | 38 tracked bars in Sioux Falls",
-    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 18"
+    "outreach_score_line": "Reachability 18 | Revenue 20 | Switch 24 | Timing 22 | Fit 84"
   },
   {
     "id": "siouxfalls-4146-arrowhead-house",

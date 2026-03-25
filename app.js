@@ -27,6 +27,7 @@ let allLeads = [];
 let allActivity = [];
 let allSources = [];
 let allMarkets = [];
+let dashboardMeta = {};
 
 const LIVE_SOURCE_IDS = new Set([
   'mn-minneapolis-public-hearings',
@@ -1133,14 +1134,18 @@ function renderMarketList(markets) {
   marketListEl.innerHTML = '';
   const prChecked = filtered.filter((item) => item.property_radar_status && item.property_radar_status !== 'not_checked').length;
   const prMatched = filtered.filter((item) => item.property_radar_status === 'matched').length;
+  const staleCount = Number(dashboardMeta?.marketInventory?.stale_count || 0);
+  const freshnessLine = staleCount
+    ? ` Using the last good market snapshot for ${staleCount} accounts while today's map scrape retries clear.`
+    : '';
   const head = document.createElement('div');
   head.className = 'call-list-head';
   head.innerHTML = `
     <div>
       <p class="eyebrow">Area Inventory</p>
-      <h2 class="section-title">Bars In Area</h2>
+      <h2 class="section-title">Accounts In Area</h2>
     </div>
-    <p class="section-copy">Full market scan for the filtered area. Showing ${filtered.length} bars, with owner/property checks run on ${prChecked} bars today and ${prMatched} parcel matches in this view.</p>
+    <p class="section-copy">Full market scan for the filtered area. Showing ${filtered.length} bar and restaurant accounts, with owner/property checks attached on ${prChecked} accounts in this view and ${prMatched} parcel matches visible.${freshnessLine}</p>
   `;
   marketListEl.appendChild(head);
 
@@ -1368,6 +1373,7 @@ async function loadDashboard() {
   allActivity = Array.isArray(activity) ? activity : [];
   allSources = Array.isArray(sources) ? sources : [];
   allMarkets = Array.isArray(market) ? market : [];
+  dashboardMeta = meta || {};
   generatedAtEl.textContent = meta?.generated_at ? new Date(meta.generated_at).toLocaleString() : 'Not refreshed yet';
   leadCountEl.textContent = String(allLeads.length);
   marketCountMetaEl.textContent = String(allMarkets.length);

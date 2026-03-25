@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-03-25T16:46:28.035Z",
+  "generated_at": "2026-03-25T17:15:03.909Z",
   "lead_count": 3,
   "activity_count": 31,
-  "market_count": 363,
+  "market_count": 340,
   "cities": [
     "Minneapolis",
     "St. Paul"
@@ -29,15 +29,35 @@
   },
   "marketInventory": {
     "actor_id": "api-ninja/google-maps-scraper",
-    "market_count": 363,
+    "market_count": 340,
     "property_radar_checked_count": 18,
-    "property_radar_matched_count": 8,
+    "property_radar_matched_count": 10,
     "property_radar_limit": 18,
-    "warnings": []
+    "stale_count": 340,
+    "warnings": [
+      "Minneapolis market inventory failed: Apify run failed.. Using previous snapshot (57 accounts).",
+      "St. Paul market inventory failed: Apify run failed.. Using previous snapshot (57 accounts).",
+      "Duluth market inventory failed: Apify run failed.. Using previous snapshot (30 accounts).",
+      "Rochester market inventory failed: Apify run failed.. Using previous snapshot (36 accounts).",
+      "Fargo market inventory failed: Apify run failed.. Using previous snapshot (35 accounts).",
+      "Grand Forks market inventory failed: Apify run failed.. Using previous snapshot (28 accounts).",
+      "Bismarck market inventory failed: Apify run failed.. Using previous snapshot (28 accounts).",
+      "Sioux Falls market inventory failed: Apify run failed.. Using previous snapshot (38 accounts).",
+      "Rapid City market inventory failed: Apify run failed.. Using previous snapshot (31 accounts)."
+    ]
   },
   "warnings": [
     "Minnesota AGE Public Data Access is the preferred statewide approved-license source, but the portal is currently blocking headless automation. This build is currently automating Minneapolis, St. Paul, Fargo, and Sioux Falls public records instead.",
     "Rapid City agenda pages are still behind a Cloudflare challenge, so Rapid City remains a manual watchlist source for now.",
-    "Apify enrichment is active via project-dotenv."
+    "Apify enrichment is active via project-dotenv.",
+    "Minneapolis market inventory failed: Apify run failed.. Using previous snapshot (57 accounts).",
+    "St. Paul market inventory failed: Apify run failed.. Using previous snapshot (57 accounts).",
+    "Duluth market inventory failed: Apify run failed.. Using previous snapshot (30 accounts).",
+    "Rochester market inventory failed: Apify run failed.. Using previous snapshot (36 accounts).",
+    "Fargo market inventory failed: Apify run failed.. Using previous snapshot (35 accounts).",
+    "Grand Forks market inventory failed: Apify run failed.. Using previous snapshot (28 accounts).",
+    "Bismarck market inventory failed: Apify run failed.. Using previous snapshot (28 accounts).",
+    "Sioux Falls market inventory failed: Apify run failed.. Using previous snapshot (38 accounts).",
+    "Rapid City market inventory failed: Apify run failed.. Using previous snapshot (31 accounts)."
   ]
 }
